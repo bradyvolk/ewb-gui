@@ -1,0 +1,28 @@
+#:kivy 1.0
+
+GridLayout:
+    rows: 6
+    columns: 1
+    padding: 100
+    spacing: 30
+    orientation: 'vertical'
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'tanzania_drone_pic2.jpg'
+    Label:
+        text: 'Digital Agriculture'
+        font_size: 40
+        bold: True
+        color: (240, 240, 240, 1)
+    Label:
+        text: ''
+    Button:
+        text: 'Start'
+    Button:
+        text: 'Instructions'
+    Button:
+        text: 'Documentation'
+    Button:
+        text: 'Project Information'
