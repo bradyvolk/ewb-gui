@@ -1,0 +1,120 @@
+#:kivy 1.0
+
+WindowManager:
+    MainWindow:
+    SecondWindow:
+
+<MainWindow>:
+    name: 'start_window'
+    GridLayout:
+        rows: 6
+        columns: 1
+        padding: 100
+        spacing: 30
+        orientation: 'vertical'
+        canvas.before:
+            Rectangle:
+                pos: self.pos
+                size: self.size
+                source: 'resources/images/light-green.jpg'
+        Label:
+            text: 'Digital Agriculture'
+            font_size: 60
+            font_name: 'resources/fonts/Orbitron-Bold.ttf'
+            bold: True
+            color: (240, 240, 240, 1)
+        Label:
+            text: ""
+        AnchorLayout:
+            Button:
+                text: 'Start'
+                on_release: 
+                    app.root.current = 'map_window'
+                    root.manager.transition.direction = "left"
+                size_hint_x: 0.5
+        AnchorLayout:
+            Button:
+                text: 'Instructions'
+                size_hint_x: 0.5
+        AnchorLayout:
+            Button:
+                text: 'Documentation'
+                size_hint_x: 0.5
+        AnchorLayout:
+            Button:
+                text: 'Project Information'
+                size_hint_x: 0.5
+
+<SecondWindow>:
+    name: 'map_window'
+    GridLayout:
+        rows: 3
+        columns: 10
+        canvas.before:
+            Rectangle:
+                pos: self.pos
+                size: self.size
+                source: 'resources/images/dark-grey.jpg'
+        AnchorLayout:
+            size_hint_y: 0.2
+            Label:
+                text: 'Route Planning'
+                font_size: 30
+                font_name: 'resources/fonts/Orbitron-Bold.ttf'
+                bold: True
+                color: '#C0C0C0'
+        AnchorLayout:
+            size_hint_y: 2
+            canvas.before:
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+                    source: 'resources/images/ghana.jpg'
+        GridLayout:
+            size_hint_y: 0.5
+            cols: 2
+            padding: 20
+
+            GridLayout:
+                cols: 6
+                size_hint_y: 0.3
+                size_hint_x: 1
+                AnchorLayout:
+                    Button:
+                        text: "Insert Image"
+                        size_hint: (1, 0.6)
+                AnchorLayout:
+                    Button:
+                        text: "Undo"
+                        size_hint: (1, 0.6)
+                        padding_x: 10
+                AnchorLayout:
+                    Button:
+                        text: "Clear"
+                        size_hint: (1, 0.6)
+                        padding_x: 10
+                AnchorLayout:
+                    Button:
+                        text: "Polygon"
+                        size_hint: (1, 0.6)
+                        padding_x: 10
+                AnchorLayout:
+                    Button:
+                        text: "Lasso"
+                        size_hint: (1, 0.6)
+                        padding_x: 10
+                AnchorLayout:
+                    Button:
+                        text: "Draw Path"
+                        size_hint: (1, 0.6)
+                        padding_x: 10
+            AnchorLayout:
+                anchor_x: "right"
+                size_hint_x: 0.3
+                padding: 10
+                Button:
+                    text: "Run"
+                    size_hint: (1, 1)
+
+
+

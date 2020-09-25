@@ -1,6 +1,6 @@
 #:kivy 1.0
 
-GridLayout:
+<Base>: 
     rows: 6
     columns: 1
     padding: 100
@@ -10,19 +10,28 @@ GridLayout:
         Rectangle:
             pos: self.pos
             size: self.size
-            source: 'tanzania_drone_pic2.jpg'
+            source: 'resources/images/light-green.jpg'
     Label:
         text: 'Digital Agriculture'
-        font_size: 40
+        font_size: 60
+        font_name: 'resources/fonts/Orbitron-Bold.ttf'
         bold: True
         color: (240, 240, 240, 1)
-    Label:
-        text: ''
-    Button:
-        text: 'Start'
-    Button:
-        text: 'Instructions'
-    Button:
-        text: 'Documentation'
-    Button:
-        text: 'Project Information'
+        background_color: (240, 240, 240, 1)
+    AnchorLayout:
+        Button:
+            text: 'Start'
+            on_release: root.start_map()
+            size_hint_x: 0.5
+    AnchorLayout:
+        Button:
+            text: 'Instructions'
+            size_hint_x: 0.5
+    AnchorLayout:
+        Button:
+            text: 'Documentation'
+            size_hint_x: 0.5
+    AnchorLayout:
+        Button:
+            text: 'Project Information'
+            size_hint_x: 0.5

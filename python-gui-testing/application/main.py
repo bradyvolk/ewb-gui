@@ -11,14 +11,42 @@ TestApp, which implies that kivy should try to load "test.kv". That file
 contains a root Widget.
 '''
 
+from kivy.config import Config
+from kivy.uix.button import Button
+from kivy.uix.gridlayout import GridLayout
 from kivy.app import App
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.lang import Builder
+
 import kivy
 kivy.require('1.0.7')
 
+# Login screen
 
-class TestApp(App):
+
+class MainWindow(Screen):
+    pass
+
+# Mapping screen
+
+
+class SecondWindow(Screen):
+    pass
+
+# Controller (MVC perspective)
+
+
+class WindowManager(ScreenManager):
     pass
 
 
-if __name__ == '__main__':
-    TestApp().run()
+kv = Builder.load_file("main.kv")
+
+
+class MyMainApp(App):
+    def build(self):
+        return kv
+
+
+if __name__ == "__main__":
+    MyMainApp().run()
