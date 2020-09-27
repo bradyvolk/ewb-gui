@@ -5,44 +5,44 @@ WindowManager:
     SecondWindow:
 
 <MainWindow>:
-    name: 'start_window'
+    name: "start_window"
     GridLayout:
         rows: 6
         columns: 1
         padding: 100
         spacing: 30
-        orientation: 'vertical'
+        orientation: "vertical"
         canvas.before:
             Rectangle:
                 pos: self.pos
                 size: self.size
-                source: 'resources/images/light-green.jpg'
+                source: "resources/images/light-green.jpg"
         Label:
-            text: 'Digital Agriculture'
+            text: "Digital Agriculture"
             font_size: 60
-            font_name: 'resources/fonts/Orbitron-Bold.ttf'
+            font_name: "resources/fonts/Orbitron-Bold.ttf"
             bold: True
             color: (240, 240, 240, 1)
         Label:
             text: ""
         AnchorLayout:
             Button:
-                text: 'Start'
+                text: "Start"
                 on_release: 
-                    app.root.current = 'map_window'
+                    app.root.current = "map_window"
                     root.manager.transition.direction = "left"
                 size_hint_x: 0.5
         AnchorLayout:
             Button:
-                text: 'Instructions'
+                text: "Instructions"
                 size_hint_x: 0.5
         AnchorLayout:
             Button:
-                text: 'Documentation'
+                text: "Documentation"
                 size_hint_x: 0.5
         AnchorLayout:
             Button:
-                text: 'Project Information'
+                text: "Project Information"
                 size_hint_x: 0.5
 
 <SecondWindow>:
@@ -54,22 +54,33 @@ WindowManager:
             Rectangle:
                 pos: self.pos
                 size: self.size
-                source: 'resources/images/dark-grey.jpg'
-        AnchorLayout:
+                source: "resources/images/dark-grey.jpg"
+        BoxLayout:
+            orientation: "vertical"
             size_hint_y: 0.2
-            Label:
-                text: 'Route Planning'
-                font_size: 30
-                font_name: 'resources/fonts/Orbitron-Bold.ttf'
-                bold: True
-                color: '#C0C0C0'
+            AnchorLayout:
+                anchor_x: "right"
+                size_hint_x: 0.1
+                Button:
+                    text: "Home"
+                    on_release: 
+                        app.root.current = "start_window"
+                        root.manager.transition.direction = "right"
+            AnchorLayout:
+                anchor_x: "center"
+                Label:
+                    text: "Route Planning"
+                    font_size: 30
+                    font_name: "resources/fonts/Orbitron-Bold.ttf"
+                    bold: True
+                    color: "#C0C0C0"
         AnchorLayout:
             size_hint_y: 2
             canvas.before:
                 Rectangle:
                     pos: self.pos
                     size: self.size
-                    source: 'resources/images/ghana.jpg'
+                    source: "resources/images/ghana.jpg"
         GridLayout:
             size_hint_y: 0.5
             cols: 2
