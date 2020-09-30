@@ -1,51 +1,51 @@
 #:kivy 1.0
 
 WindowManager:
-    MainWindow:
-    SecondWindow:
+    HomeWindow:
+    MapWindow:
 
-<MainWindow>:
-    name: "start_window"
+# Home Navigation Window
+<HomeWindow>:
+    name: "home_window"
     GridLayout:
-        rows: 6
+        rows: 2
         columns: 1
         padding: 100
-        spacing: 30
+        spacing: 100
         orientation: "vertical"
         canvas.before:
             Rectangle:
                 pos: self.pos
                 size: self.size
                 source: "resources/images/light-green.jpg"
+        # Title
         Label:
+            size_hint: (1, 0.2)
             text: "Digital Agriculture"
             font_size: 60
             font_name: "resources/fonts/Orbitron-Bold.ttf"
             bold: True
             color: (240, 240, 240, 1)
-        Label:
-            text: ""
-        AnchorLayout:
+        
+        # Navigation Buttons
+        GridLayout:
+            col: 1
+            rows: 4
+            spacing: 10
             Button:
                 text: "Start"
                 on_release: 
                     app.root.current = "map_window"
                     root.manager.transition.direction = "left"
-                size_hint_x: 0.5
-        AnchorLayout:
             Button:
                 text: "Instructions"
-                size_hint_x: 0.5
-        AnchorLayout:
             Button:
                 text: "Documentation"
-                size_hint_x: 0.5
-        AnchorLayout:
             Button:
                 text: "Project Information"
-                size_hint_x: 0.5
 
-<SecondWindow>:
+# Window for Map Drawing
+<MapWindow>:
     name: 'map_window'
     GridLayout:
         rows: 3
@@ -55,37 +55,47 @@ WindowManager:
                 pos: self.pos
                 size: self.size
                 source: "resources/images/dark-grey.jpg"
-        BoxLayout:
-            orientation: "vertical"
+
+        # Back Button and Title
+        FloatLayout:
             size_hint_y: 0.2
-            AnchorLayout:
-                anchor_x: "right"
-                size_hint_x: 0.1
-                Button:
-                    text: "Home"
-                    on_release: 
-                        app.root.current = "start_window"
-                        root.manager.transition.direction = "right"
-            AnchorLayout:
-                anchor_x: "center"
-                Label:
-                    text: "Route Planning"
-                    font_size: 30
-                    font_name: "resources/fonts/Orbitron-Bold.ttf"
-                    bold: True
-                    color: "#C0C0C0"
-        AnchorLayout:
+            Button:
+                pos_hint: {"x": 0.02, "center_y": 0.5}
+                size_hint: (0.1, 0.8)
+                text: "Home"
+                on_release: 
+                    app.root.current = "home_window"
+                    root.manager.transition.direction = "right"
+            Label:
+                pos_hint: {"center_x": 0.5, "center_y":0.5}
+                size_hint: (0.8, 0.8)
+                text: "Route Planning"
+                font_size: 30
+                font_name: "resources/fonts/Orbitron-Bold.ttf"
+                bold: True
+                color: "#C0C0C0"
+
+        # Main Box that contains Map
+        BoxLayout:
+            orientation: "horizontal"
             size_hint_y: 2
-            canvas.before:
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
-                    source: "resources/images/ghana.jpg"
+            AnchorLayout:
+                DrawableMapView:
+                    zoom:17
+                    lat:42.448
+                    lon:-76.485
+                    MapMarker:
+                        lat:42.448
+                        lon:-76.485
+                        size: 50, 50
+                        color: 1, 0, 0, 1
+                        allow_stretch: False
+
+        # Map Drawing Tools
         GridLayout:
             size_hint_y: 0.5
             cols: 2
             padding: 20
-
             GridLayout:
                 cols: 6
                 size_hint_y: 0.3

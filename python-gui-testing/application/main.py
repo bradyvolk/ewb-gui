@@ -1,14 +1,5 @@
 '''
 Application built from a  .kv file
-==================================
-
-This shows how to implicitly use a .kv file for your application. You
-should see a full screen button labelled "Hello from test.kv".
-
-After Kivy instantiates a subclass of App, it implicitly searches for a .kv
-file. The file test.kv is selected because the name of the subclass of App is
-TestApp, which implies that kivy should try to load "test.kv". That file
-contains a root Widget.
 '''
 
 from kivy.config import Config
@@ -17,36 +8,82 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
+from kivy.garden.mapview import MapView
+from kivy.garden.mapview import MapMarker
+from kivy.properties import ObjectProperty
+
 
 import kivy
 kivy.require('1.0.7')
 
-# Login screen
 
-
-class MainWindow(Screen):
+class HomeWindow(Screen):
+    """
+    Login screen
+    """
     pass
 
-# Mapping screen
 
-
-class SecondWindow(Screen):
+class MapWindow(Screen):
+    """
+    Mapping screen
+    """
     pass
-
-# Controller (MVC perspective)
 
 
 class WindowManager(ScreenManager):
+    """
+    Navigation Router
+    """
     pass
 
 
-kv = Builder.load_file("main.kv")
+class DrawableMapView(MapView):
+    """
+    Garden MapView, but it's drawable
+    """
+    draw_mode = False
+
+    def __init__(self, **kwargs):
+        return super().__init__()
+
+    def on_touch_down(self, touch):
+        return super().on_touch_down(touch)
+
+    def on_touch_up(self, touch):
+        return super().on_touch_up(touch)
+
+    def on_touch_move(self, touch):
+        # Harcoded bias offset for y is concerning
+        coord = self.get_latlon_at(touch.x, touch.y - 115, zoom=None)
+        marker = MapMarker()
+        (marker.lat, marker.lon) = (coord.lat, coord.lon)
+        marker.size = (20, 20)
+        marker.color = (1, 0, 0, 1)
+        self.add_marker(marker)
+
+    # TODO assign draw_mode based on button toggle
+    def do_update(self, dt):
+        if not self.draw_mode:
+            super().do_update(dt)
+
+
+# Sets file to load
+main_file = Builder.load_file("main.kv")
 
 
 class MyMainApp(App):
+    """
+    Main App Class Defintion
+    """
+
     def build(self):
-        return kv
+        """
+        Currently just returns main_file which holds the whole app
+        """
+        return main_file
 
 
+# Main Loop
 if __name__ == "__main__":
     MyMainApp().run()
