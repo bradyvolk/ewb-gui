@@ -42,6 +42,7 @@ class DrawableMapView(MapView):
     """
     Garden MapView, but it's drawable
     """
+    btn = ObjectProperty(None)
     draw_mode = False
 
     def __init__(self, **kwargs):
@@ -54,7 +55,7 @@ class DrawableMapView(MapView):
         return super().on_touch_up(touch)
 
     def on_touch_move(self, touch):
-        # Harcoded bias offset for y is concerning
+        # Hardcoded bias offset for y is concerning
         coord = self.get_latlon_at(touch.x, touch.y - 115, zoom=None)
         marker = MapMarker()
         (marker.lat, marker.lon) = (coord.lat, coord.lon)
@@ -66,6 +67,7 @@ class DrawableMapView(MapView):
     def do_update(self, dt):
         if not self.draw_mode:
             super().do_update(dt)
+            
 
 
 # Sets file to load
@@ -82,8 +84,11 @@ class MyMainApp(App):
         Currently just returns main_file which holds the whole app
         """
         return main_file
-
-
+    
+    def draw_toggle(self):
+        DrawableMapView.draw_mode = not(DrawableMapView.draw_mode)
+    
+    
 # Main Loop
 if __name__ == "__main__":
     MyMainApp().run()

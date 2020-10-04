@@ -126,9 +126,15 @@ WindowManager:
                         padding_x: 10
                 AnchorLayout:
                     Button:
+                        id: btn
                         text: "Draw Path"
                         size_hint: (1, 0.6)
                         padding_x: 10
+                        on_release:
+                            app.draw_toggle()
+                            
+                                
+                            
             AnchorLayout:
                 anchor_x: "right"
                 size_hint_x: 0.3
