@@ -137,6 +137,7 @@ WindowManager:
                         padding_x: 10
                         on_release: 
                             root.ids["map"].draw_mode = not root.ids["map"].draw_mode
+                            root.ids["map"]._scatter.do_translation = not root.ids["map"]._scatter.do_translation
             AnchorLayout:
                 anchor_x: "right"
                 size_hint_x: 0.3

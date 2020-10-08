@@ -11,7 +11,7 @@ from kivy.lang import Builder
 from kivy.garden.mapview import MapView
 from kivy.garden.mapview import MapMarker
 from kivy.properties import ObjectProperty
-
+from kivy.properties import BooleanProperty
 
 import kivy
 kivy.require('1.0.7')
@@ -63,7 +63,6 @@ class DrawableMapView(MapView):
             marker.color = (1, 0, 0, 1)
             self.add_marker(marker)
 
-    # TODO assign draw_mode based on button toggle
     def do_update(self, dt):
         if not self.draw_mode:
             print("updating")
