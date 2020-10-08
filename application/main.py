@@ -54,18 +54,24 @@ class DrawableMapView(MapView):
         return super().on_touch_up(touch)
 
     def on_touch_move(self, touch):
-        # Harcoded bias offset for y is concerning
-        coord = self.get_latlon_at(touch.x, touch.y - 115, zoom=None)
-        marker = MapMarker()
-        (marker.lat, marker.lon) = (coord.lat, coord.lon)
-        marker.size = (20, 20)
-        marker.color = (1, 0, 0, 1)
-        self.add_marker(marker)
+        if self.draw_mode:
+            # Harcoded bias offset for y is concerning
+            coord = self.get_latlon_at(touch.x, touch.y - 115, zoom=None)
+            marker = MapMarker()
+            (marker.lat, marker.lon) = (coord.lat, coord.lon)
+            marker.size = (20, 20)
+            marker.color = (1, 0, 0, 1)
+            self.add_marker(marker)
 
     # TODO assign draw_mode based on button toggle
     def do_update(self, dt):
         if not self.draw_mode:
+            print("updating")
             super().do_update(dt)
+
+    def on_transform(self, *args):
+        if not self.draw_mode:
+            super().on_transform(*args)
 
 
 # Sets file to load

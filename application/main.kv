@@ -46,8 +46,9 @@ WindowManager:
 
 # Window for Map Drawing
 <MapWindow>:
-    name: 'map_window'
+    name: "map_window"
     GridLayout:
+        id: window_grid
         rows: 3
         columns: 10
         canvas.before:
@@ -77,10 +78,13 @@ WindowManager:
 
         # Main Box that contains Map
         BoxLayout:
+            id: map_container
             orientation: "horizontal"
             size_hint_y: 2
             AnchorLayout:
+                id: map_anchor
                 DrawableMapView:
+                    id: map
                     zoom:17
                     lat:42.448
                     lon:-76.485
@@ -93,6 +97,7 @@ WindowManager:
 
         # Map Drawing Tools
         GridLayout:
+            name: "drawing_tools"
             size_hint_y: 0.5
             cols: 2
             padding: 20
@@ -126,9 +131,12 @@ WindowManager:
                         padding_x: 10
                 AnchorLayout:
                     Button:
+                        name: "draw_path_button"
                         text: "Draw Path"
                         size_hint: (1, 0.6)
                         padding_x: 10
+                        on_release: 
+                            root.ids["map"].draw_mode = not root.ids["map"].draw_mode
             AnchorLayout:
                 anchor_x: "right"
                 size_hint_x: 0.3
