@@ -88,12 +88,6 @@ WindowManager:
                     zoom:17
                     lat:42.448
                     lon:-76.485
-                    MapMarker:
-                        lat:42.448
-                        lon:-76.485
-                        size: 50, 50
-                        color: 1, 0, 0, 1
-                        allow_stretch: False
 
         # Map Drawing Tools
         GridLayout:
@@ -119,6 +113,8 @@ WindowManager:
                         text: "Clear"
                         size_hint: (1, 0.6)
                         padding_x: 10
+                        on_release:
+                            root.ids["map"].clear_paths_drawn()
                 AnchorLayout:
                     Button:
                         text: "Polygon"
@@ -136,8 +132,7 @@ WindowManager:
                         size_hint: (1, 0.6)
                         padding_x: 10
                         on_release: 
-                            root.ids["map"].draw_mode = not root.ids["map"].draw_mode
-                            root.ids["map"]._scatter.do_translation = not root.ids["map"]._scatter.do_translation
+                            root.ids["map"].toggle_draw_mode()
             AnchorLayout:
                 anchor_x: "right"
                 size_hint_x: 0.3

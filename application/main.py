@@ -10,8 +10,11 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
 from kivy.garden.mapview import MapView
 from kivy.garden.mapview import MapMarker
+from kivy.garden.mapview import MarkerMapLayer
 from kivy.properties import ObjectProperty
 from kivy.properties import BooleanProperty
+from kivy.clock import Clock
+import os
 
 import kivy
 kivy.require('1.0.7')
@@ -47,30 +50,34 @@ class DrawableMapView(MapView):
     def __init__(self, **kwargs):
         return super().__init__()
 
-    def on_touch_down(self, touch):
-        return super().on_touch_down(touch)
-
-    def on_touch_up(self, touch):
-        return super().on_touch_up(touch)
-
     def on_touch_move(self, touch):
+        """
+        If in draw mode, add map markers wherever touch event is
+        """
         if self.draw_mode:
             # Harcoded bias offset for y is concerning
             coord = self.get_latlon_at(touch.x, touch.y - 115, zoom=None)
             marker = MapMarker()
+            marker.source = "resources/images/marker.png"
             (marker.lat, marker.lon) = (coord.lat, coord.lon)
-            marker.size = (20, 20)
-            marker.color = (1, 0, 0, 1)
+            marker.size = (10, 10)
+            marker.color = (0.6, 0, 0, 1)  # brown
             self.add_marker(marker)
 
-    def do_update(self, dt):
-        if not self.draw_mode:
-            print("updating")
-            super().do_update(dt)
+    def toggle_draw_mode(self):
+        """
+        Turns on and off draw mode
+        """
+        self.draw_mode = not self.draw_mode
+        self._scatter.do_translation_x = not self._scatter.do_translation_x
+        self._scatter.do_translation_y = not self._scatter.do_translation_y
 
-    def on_transform(self, *args):
-        if not self.draw_mode:
-            super().on_transform(*args)
+    def clear_paths_drawn(self):
+        """
+        Clears all paths drawn
+        """
+        self.remove_layer(self._default_marker_layer)
+        self._default_marker_layer = None
 
 
 # Sets file to load
