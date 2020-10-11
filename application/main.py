@@ -18,7 +18,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.factory import Factory
 from kivy.uix.popup import Popup
 import os
-
+import webbrowser 
 import kivy
 kivy.require('1.0.7')
 
@@ -27,7 +27,9 @@ class HomeWindow(Screen):
     """
     Login screen
     """
-    pass
+    def open_projectinfo(self, weblink):
+        webbrowser.open(weblink)
+    
 
 
 class MapWindow(Screen):
@@ -50,6 +52,8 @@ class MapWindow(Screen):
     def load(self, path, filename):
         self.map_source = path
         self.dismiss_popup()
+    
+    
 
 
 class WindowManager(ScreenManager):
