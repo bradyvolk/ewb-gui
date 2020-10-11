@@ -18,7 +18,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.factory import Factory
 from kivy.uix.popup import Popup
 import os
-import webbrowser 
+import webbrowser
 import kivy
 kivy.require('1.0.7')
 
@@ -27,9 +27,9 @@ class HomeWindow(Screen):
     """
     Login screen
     """
+
     def open_projectinfo(self, weblink):
         webbrowser.open(weblink)
-    
 
 
 class MapWindow(Screen):
@@ -52,8 +52,6 @@ class MapWindow(Screen):
     def load(self, path, filename):
         self.map_source = path
         self.dismiss_popup()
-    
-    
 
 
 class WindowManager(ScreenManager):
@@ -76,6 +74,7 @@ class DrawableMapView(MapView):
     Garden MapView, but it's drawable
     """
     draw_mode = BooleanProperty(False)
+    erase_mode = BooleanProperty(False)
 
     def __init__(self, **kwargs):
         return super().__init__()
@@ -93,12 +92,42 @@ class DrawableMapView(MapView):
             marker.size = (10, 10)
             marker.color = (0.6, 0, 0, 1)  # brown
             self.add_marker(marker)
+        elif self.erase_mode:
+            coord = self.get_latlon_at(touch.x, touch.y - 115, zoom=None)
+            erase_location = (coord.lat, coord.lon)
+            if self._default_marker_layer is not None:
+                markers = self._default_marker_layer.markers
+                lats = [marker.lat for marker in markers]
+                lons = [marker.lon for marker in markers]
+                print(lats)
+                print(lons)
+                for i in range(len(lats)):
+                    if lats[i] <= erase_location[0] + 0.1 and lats[i] >= erase_location[0] - 0.1:
+                        if lons[i] <= erase_location[0] + 0.1 and lons[i] >= erase_location[0] - 0.1:
+                            self.remove_marker(markers[i])
 
     def toggle_draw_mode(self):
         """
         Turns on and off draw mode
         """
         self.draw_mode = not self.draw_mode
+        if self.erase_mode:
+            self.toggle_erase_mode()
+        self.toggle_translation()
+
+    def toggle_erase_mode(self):
+        """
+        Turns on and off erase mode
+        """
+        self.erase_mode = not self.erase_mode
+        if self.draw_mode:
+            self.toggle_draw_mode()
+        self.toggle_translation()
+
+    def toggle_translation(self):
+        """
+        Turns on and off map translation
+        """
         self._scatter.do_translation_x = not self._scatter.do_translation_x
         self._scatter.do_translation_y = not self._scatter.do_translation_y
 

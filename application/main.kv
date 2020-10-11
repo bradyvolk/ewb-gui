@@ -141,9 +141,16 @@ WindowManager:
                             root.ids["map"].clear_paths_drawn()
                 AnchorLayout:
                     Button:
-                        text: "Polygon"
+                        id: eraser_button
+                        text: "Eraser"
                         size_hint: (1, 0.6)
                         padding_x: 10
+                        on_release:
+                            root.ids["map"].toggle_erase_mode()
+                            if root.ids["map"].erase_mode: \
+                            root.ids["eraser_button"].background_color = (0.5, 0.5, 0.5, 1); 
+                            else: \
+                            root.ids["eraser_button"].background_color = (1, 1, 1, 1)
                 AnchorLayout:
                     Button:
                         text: "Lasso"
