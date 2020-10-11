@@ -14,6 +14,9 @@ from kivy.garden.mapview import MarkerMapLayer
 from kivy.properties import ObjectProperty
 from kivy.properties import BooleanProperty
 from kivy.clock import Clock
+from kivy.uix.floatlayout import FloatLayout
+from kivy.factory import Factory
+from kivy.uix.popup import Popup
 import os
 
 import kivy
@@ -29,9 +32,24 @@ class HomeWindow(Screen):
 
 class MapWindow(Screen):
     """
-    Mapping screen
+    Mapping screen and code for loading maps
     """
-    pass
+    loadfile = ObjectProperty(None)
+    text_input = ObjectProperty(None)
+    map_source = ""
+
+    def dismiss_popup(self):
+        self._popup.dismiss()
+
+    def show_load(self):
+        content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
+        self._popup = Popup(title="Load file", content=content,
+                            size_hint=(0.9, 0.9))
+        self._popup.open()
+
+    def load(self, path, filename):
+        self.map_source = path
+        self.dismiss_popup()
 
 
 class WindowManager(ScreenManager):
@@ -41,11 +59,19 @@ class WindowManager(ScreenManager):
     pass
 
 
+class LoadDialog(FloatLayout):
+    load = ObjectProperty(None)
+    cancel = ObjectProperty(None)
+
+
+Factory.register('LoadDialog', cls=LoadDialog)
+
+
 class DrawableMapView(MapView):
     """
     Garden MapView, but it's drawable
     """
-    draw_mode = False
+    draw_mode = BooleanProperty(False)
 
     def __init__(self, **kwargs):
         return super().__init__()
@@ -78,6 +104,12 @@ class DrawableMapView(MapView):
         """
         self.remove_layer(self._default_marker_layer)
         self._default_marker_layer = None
+
+    def set_map_source(self):
+        """
+        Sets the map source for our code
+        """
+        pass
 
 
 # Sets file to load

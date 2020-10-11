@@ -44,6 +44,26 @@ WindowManager:
             Button:
                 text: "Project Information"
 
+<LoadDialog>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserListView:
+            id: filechooser
+            path: "../../../"
+            rootpath: "../"
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+
+            Button:
+                text: "Load"
+                on_release: root.load(filechooser.path, filechooser.selection)
+
 # Window for Map Drawing
 <MapWindow>:
     name: "map_window"
@@ -103,6 +123,7 @@ WindowManager:
                     Button:
                         text: "Insert Image"
                         size_hint: (1, 0.6)
+                        on_release: root.show_load()
                 AnchorLayout:
                     Button:
                         text: "Undo"
@@ -127,12 +148,16 @@ WindowManager:
                         padding_x: 10
                 AnchorLayout:
                     Button:
-                        name: "draw_path_button"
+                        id: draw_path_button
                         text: "Draw Path"
                         size_hint: (1, 0.6)
                         padding_x: 10
                         on_release: 
                             root.ids["map"].toggle_draw_mode()
+                            if root.ids["map"].draw_mode: \
+                            root.ids["draw_path_button"].background_color = (0.5, 0.5, 0.5, 1); 
+                            else: \
+                            root.ids["draw_path_button"].background_color = (1, 1, 1, 1)
             AnchorLayout:
                 anchor_x: "right"
                 size_hint_x: 0.3
