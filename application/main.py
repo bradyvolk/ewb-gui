@@ -3,8 +3,10 @@ Application built from a  .kv file
 '''
 
 from kivy.config import Config
+from kivy.core.window import Window
 from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.label import Label
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
@@ -39,6 +41,12 @@ class MapWindow(Screen):
     loadfile = ObjectProperty(None)
     text_input = ObjectProperty(None)
     map_source = ""
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    # def on_mouse_pos(self, instance, pos):
+    #     print(pos)
 
     def dismiss_popup(self):
         self._popup.dismiss()
@@ -77,14 +85,37 @@ class DrawableMapView(MapView):
     erase_mode = BooleanProperty(False)
 
     def __init__(self, **kwargs):
+        Window.bind(mouse_pos=self.on_mouse_pos)
         return super().__init__()
+
+    def on_mouse_pos(self, instance, pos):
+        """
+        Used to set position for drawing and erasing labels
+        when the user is in those modes
+        """
+        (x, y) = pos
+        app = App.get_running_app()
+        map_window_ids = app.root.children[0].ids
+        if self.draw_mode:
+            draw_image = map_window_ids["draw_image"]
+            draw_image.center_x = x
+            draw_image.center_y = y
+        if self.erase_mode:
+            eraser_image = map_window_ids["eraser_image"]
+            eraser_image.center_x = x
+            eraser_image.center_y = y
 
     def on_touch_move(self, touch):
         """
         If in draw mode, add map markers wherever touch event is
+        If in erase mode, remove markers wherever touch event is
         """
+        # TODO Somehow remove based on marker pixel location instead of coordinate
+        # this is too slow, especially when there are a lot of markers
+
+        # TODO break this into some functions probably
         if self.draw_mode:
-            # Harcoded bias offset for y is concerning
+            # TODO Harcoded bias offset for y is concerning
             coord = self.get_latlon_at(touch.x, touch.y - 115, zoom=None)
             marker = MapMarker()
             marker.source = "resources/images/marker.png"
@@ -99,19 +130,39 @@ class DrawableMapView(MapView):
                 markers = self._default_marker_layer.markers
                 lats = [marker.lat for marker in markers]
                 lons = [marker.lon for marker in markers]
-                print(lats)
-                print(lons)
-                for i in range(len(lats)):
-                    if lats[i] <= erase_location[0] + 0.1 and lats[i] >= erase_location[0] - 0.1:
-                        if lons[i] <= erase_location[0] + 0.1 and lons[i] >= erase_location[0] - 0.1:
-                            self.remove_marker(markers[i])
+                i = 0
+                while i < len(lats):
+                    print((1 / self._zoom)**6)
+                    within_lat = lats[i] <= erase_location[0] + \
+                        6000 * \
+                        (1 / self._zoom)**6 and lats[i] >= erase_location[0] - \
+                        6000 * (1 / self._zoom)**6
+                    within_lon = lons[i] <= erase_location[1] + \
+                        6000 * \
+                        (1 / self._zoom)**6 and lons[i] >= erase_location[1] - \
+                        6000 * (1 / self._zoom)**6
+                    if within_lat and within_lon:
+                        self.remove_marker(markers[i])
+                        del lats[i], lons[i]
+                    else:
+                        i += 1
 
     def toggle_draw_mode(self):
         """
         Turns on and off draw mode
         """
         self.draw_mode = not self.draw_mode
-        if self.erase_mode:
+        app = App.get_running_app()
+        map_window_ids = app.root.children[0].ids
+        draw_mode_button = map_window_ids["draw_mode_button"]
+        draw_image = map_window_ids["draw_image"]
+        if self.draw_mode:
+            draw_mode_button.background_color = (0.5, 0.5, 0.5, 1)
+            draw_image.opacity = 1
+        else:
+            draw_mode_button.background_color = (1, 1, 1, 1)
+            draw_image.opacity = 0
+        if self.draw_mode and self.erase_mode:
             self.toggle_erase_mode()
         self.toggle_translation()
 
@@ -120,7 +171,17 @@ class DrawableMapView(MapView):
         Turns on and off erase mode
         """
         self.erase_mode = not self.erase_mode
-        if self.draw_mode:
+        app = App.get_running_app()
+        map_window_ids = app.root.children[0].ids
+        erase_mode_button = map_window_ids["erase_mode_button"]
+        eraser_image = map_window_ids["eraser_image"]
+        if self.erase_mode:
+            erase_mode_button.background_color = (0.5, 0.5, 0.5, 1)
+            eraser_image.opacity = 1
+        else:
+            erase_mode_button.background_color = (1, 1, 1, 1)
+            eraser_image.opacity = 0
+        if self.erase_mode and self.draw_mode:
             self.toggle_draw_mode()
         self.toggle_translation()
 
@@ -135,8 +196,9 @@ class DrawableMapView(MapView):
         """
         Clears all paths drawn
         """
-        self.remove_layer(self._default_marker_layer)
-        self._default_marker_layer = None
+        if self._default_marker_layer:
+            self.remove_layer(self._default_marker_layer)
+            self._default_marker_layer = None
 
     def set_map_source(self):
         """

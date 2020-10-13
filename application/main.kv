@@ -46,7 +46,6 @@ WindowManager:
                 on_release:
                     root.open_projectinfo("https://ewb.engineering.cornell.edu/subteams.html")
 
-
 <LoadDialog>:
     BoxLayout:
         size: root.size
@@ -105,12 +104,27 @@ WindowManager:
             orientation: "horizontal"
             size_hint_y: 2
             AnchorLayout:
-                id: map_anchor
-                DrawableMapView:
-                    id: map
-                    zoom:17
-                    lat:42.448
-                    lon:-76.485
+                id: map_anchor 
+                achor_y: "top"  
+                FloatLayout:  
+                    DrawableMapView:
+                        pos_hint: {'top': 1}
+                        id: map
+                        zoom:17
+                        lat:42.448
+                        lon:-76.485
+                    Image:
+                        id: eraser_image
+                        source: "resources/images/eraser.png"
+                        size_hint: (0.08, 0.08)
+                        allow_stretch: True
+                        opacity: 0
+                    Image:
+                        id: draw_image
+                        source: "resources/images/marker.png"
+                        size_hint: (0.03, 0.03)
+                        allow_stretch: True
+                        opacity: 0
 
         # Map Drawing Tools
         GridLayout:
@@ -141,16 +155,12 @@ WindowManager:
                             root.ids["map"].clear_paths_drawn()
                 AnchorLayout:
                     Button:
-                        id: eraser_button
+                        id: erase_mode_button
                         text: "Eraser"
                         size_hint: (1, 0.6)
                         padding_x: 10
                         on_release:
                             root.ids["map"].toggle_erase_mode()
-                            if root.ids["map"].erase_mode: \
-                            root.ids["eraser_button"].background_color = (0.5, 0.5, 0.5, 1); 
-                            else: \
-                            root.ids["eraser_button"].background_color = (1, 1, 1, 1)
                 AnchorLayout:
                     Button:
                         text: "Lasso"
@@ -158,16 +168,12 @@ WindowManager:
                         padding_x: 10
                 AnchorLayout:
                     Button:
-                        id: draw_path_button
+                        id: draw_mode_button
                         text: "Draw Path"
                         size_hint: (1, 0.6)
                         padding_x: 10
                         on_release: 
                             root.ids["map"].toggle_draw_mode()
-                            if root.ids["map"].draw_mode: \
-                            root.ids["draw_path_button"].background_color = (0.5, 0.5, 0.5, 1); 
-                            else: \
-                            root.ids["draw_path_button"].background_color = (1, 1, 1, 1)
             AnchorLayout:
                 anchor_x: "right"
                 size_hint_x: 0.3
