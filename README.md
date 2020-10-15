@@ -7,6 +7,8 @@ We plan to build our app with Python using Kivy to develop our GUI and interface
 
 ## Getting Started with Kivy
 
+Install kivy virtual environment and other dependecies into `ewb-gui/application` directory.
+
 After [installing Kivy](https://kivy.org/doc/stable/installation/installation-windows.html#install-win-dist), checkout this tutorial series to get down the basics: https://www.youtube.com/watch?v=bMHK6NDVlCM&list=PLzMcBGfZo4-kSJVMyYeOQ8CXJ3z1k7gHn&ab_channel=TechWithTim
 
 ## Package Management
