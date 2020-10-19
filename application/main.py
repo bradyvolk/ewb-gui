@@ -45,9 +45,6 @@ class MapWindow(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    # def on_mouse_pos(self, instance, pos):
-    #     print(pos)
-
     def dismiss_popup(self):
         self._popup.dismiss()
 
