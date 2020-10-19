@@ -83,6 +83,10 @@ class DrawableMapView(MapView):
     """
     draw_mode = BooleanProperty(False)
     line_drawing_mode = BooleanProperty(False)
+    start_of_line_segment = None
+    # For some reason, up clicks are detected twice so hacky way to prevent that
+    alternate = BooleanProperty(False)
+    # TODO maybe find a better solution to this
 
     def __init__(self, **kwargs):
         Window.bind(mouse_pos=self.on_mouse_pos)
@@ -102,20 +106,39 @@ class DrawableMapView(MapView):
             draw_image.center_y = y
 
     def on_touch_down(self, touch):
+        """
+        if in draw_mode, place a marker at the touch
+        """
         pos = (touch.x, touch.y)
         if self.draw_mode:
             if not self.line_drawing_mode:
+                self.add_marker_at_pos(pos, True)
+            else:
                 self.add_marker_at_pos(pos)
         return super().on_touch_down(touch)
 
     def on_touch_up(self, touch):
-        pos = (touch.x, touch.y)
-        if self.draw_mode:
-            if not self.line_drawing_mode:
-                self.line_drawing_mode = True
-            else:
-                self.create_line_segment()
-                self.line_drawing_mode = False
+        """
+        if in draw_mode, and in line_drawing_mode, place an endpoint for the line
+        segment and fill in points in between
+        otherwise, if in draw_mode, just change line_drawing_mode to True
+        """
+        if self.alternate:
+            self.alternate = False
+            pos = (touch.x, touch.y)
+            if self.draw_mode:
+                if not self.line_drawing_mode:
+                    self.line_drawing_mode = True
+                else:
+                    start = (self.start_of_line_segment.lat,
+                             self.start_of_line_segment.lon)
+                    end = self.get_latlon_at(pos[0], pos[1])
+                    end = (end.lat, end.lon)
+                    self.create_line_segment(start, end)
+                    self.start_of_line_segment = pos
+                    self.line_drawing_mode = False
+        else:
+            self.alternate = True
         return super().on_touch_up(touch)
 
     def on_touch_move(self, touch):
@@ -123,17 +146,26 @@ class DrawableMapView(MapView):
         """
         pass
 
-    def add_marker_at_pos(self, pos):
+    def add_marker_at_pos(self, pos, is_start_of_line_segment=False):
         """
         Adds a marker at pos where pos is a tuple of x and y coordinates
         """
-        # TODO Harcoded bias offset for y is concerning, think it's the result of the float layout
         x = pos[0]
         y = pos[1]
-        coord = self.get_latlon_at(x, y - 115, zoom=None)
+        coord = self.get_latlon_at(x, y)
         marker = MapMarker()
+        if is_start_of_line_segment:
+            self.start_of_line_segment = marker
         marker.source = "resources/images/marker.png"
         (marker.lat, marker.lon) = (coord.lat, coord.lon)
+        marker.size = (10, 10)
+        marker.color = (0.6, 0, 0, 1)  # brown
+        self.add_marker(marker)
+
+    def add_marker_at_latlon(self, latlon):
+        marker = MapMarker()
+        marker.source = "resources/images/marker.png"
+        (marker.lat, marker.lon) = latlon
         marker.size = (10, 10)
         marker.color = (0.6, 0, 0, 1)  # brown
         self.add_marker(marker)
@@ -144,10 +176,25 @@ class DrawableMapView(MapView):
         """
         pass
 
-    def create_line_segment(self):
+    def create_line_segment(self, start, end, num_points=50):
         """
+        Creates a line segment of discrete points with endpoints of start and end
+        number of points between line segment determined by num_points
+        non-endpoints are added as markers to map
         """
-        pass
+        (start_x, start_y) = start
+        (end_x, end_y) = end
+        dist_x = end_x - start_x
+        dist_y = end_y - start_y
+        x_dist_between_points = dist_x / (num_points + 1)
+        y_dist_between_points = dist_y / (num_points + 1)
+
+        current_x = start_x
+        current_y = start_y
+        for i in range(num_points):
+            current_x += x_dist_between_points
+            current_y += y_dist_between_points
+            self.add_marker_at_latlon((current_x, current_y))
 
     def toggle_draw_mode(self):
         """
@@ -180,6 +227,14 @@ class DrawableMapView(MapView):
         if self._default_marker_layer:
             self.remove_layer(self._default_marker_layer)
             self._default_marker_layer = None
+            self.start_of_line_segment = None
+            self.line_drawing_mode = False
+
+    def get_latlon_at(self, x, y, zoom=None):
+        """
+        Gets lat lon at a given coordinated, calibrated for the offset on our app
+        """
+        return super().get_latlon_at(x, y - 115, zoom=zoom)
 
     def set_map_source(self):
         """
