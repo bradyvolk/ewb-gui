@@ -114,12 +114,6 @@ WindowManager:
                         lat:42.448
                         lon:-76.485
                     Image:
-                        id: eraser_image
-                        source: "resources/images/eraser.png"
-                        size_hint: (0.08, 0.08)
-                        allow_stretch: True
-                        opacity: 0
-                    Image:
                         id: draw_image
                         source: "resources/images/marker.png"
                         size_hint: (0.03, 0.03)
@@ -155,12 +149,9 @@ WindowManager:
                             root.ids["map"].clear_paths_drawn()
                 AnchorLayout:
                     Button:
-                        id: erase_mode_button
-                        text: "Eraser"
+                        text: "Polygon"
                         size_hint: (1, 0.6)
                         padding_x: 10
-                        on_release:
-                            root.ids["map"].toggle_erase_mode()
                 AnchorLayout:
                     Button:
                         text: "Lasso"
