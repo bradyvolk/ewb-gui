@@ -107,7 +107,8 @@ class DrawableMapView(MapView):
         if in draw_mode, place a marker at the touch
         """
         pos = (touch.x, touch.y)
-        if self.draw_mode:
+        # make sure mouse isn't scrolling and in draw mode
+        if self.draw_mode and not touch.is_mouse_scrolling:
             if not self.line_drawing_mode:
                 self.add_marker_at_pos(pos, True)
             else:
@@ -120,7 +121,8 @@ class DrawableMapView(MapView):
         segment and fill in points in between
         otherwise, if in draw_mode, just change line_drawing_mode to True
         """
-        if self.alternate:
+        # make sure isn't a mouse scroll event and check every other touch_up
+        if self.alternate and not touch.is_mouse_scrolling:
             self.alternate = False
             pos = (touch.x, touch.y)
             if self.draw_mode:
