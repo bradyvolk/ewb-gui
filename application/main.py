@@ -85,6 +85,10 @@ class DrawableMapView(MapView):
     alternate = BooleanProperty(False)
     # TODO maybe find a better solution to this
 
+    bottom_of_map = 0
+    top_of_map = 0
+    line_segments = []
+
     def __init__(self, **kwargs):
         Window.bind(mouse_pos=self.on_mouse_pos)
         return super().__init__()
@@ -106,9 +110,10 @@ class DrawableMapView(MapView):
         """
         if in draw_mode, place a marker at the touch
         """
+        self.calculate_top_and_bottom_of_map()
         pos = (touch.x, touch.y)
-        # make sure mouse isn't scrolling and in draw mode
-        if self.draw_mode and not touch.is_mouse_scrolling:
+        # make sure in draw mode, mouse isn't scrolling, and touch is actually on map
+        if self.draw_mode and not touch.is_mouse_scrolling and self.is_touch_on_map(touch):
             if not self.line_drawing_mode:
                 self.add_marker_at_pos(pos, True)
             else:
@@ -121,23 +126,24 @@ class DrawableMapView(MapView):
         segment and fill in points in between
         otherwise, if in draw_mode, just change line_drawing_mode to True
         """
-        # make sure isn't a mouse scroll event and check every other touch_up
-        if self.alternate and not touch.is_mouse_scrolling:
-            self.alternate = False
-            pos = (touch.x, touch.y)
-            if self.draw_mode:
-                if not self.line_drawing_mode:
-                    self.line_drawing_mode = True
-                else:
-                    start = (self.start_of_line_segment.lat,
-                             self.start_of_line_segment.lon)
-                    end = self.get_latlon_at(pos[0], pos[1])
-                    end = (end.lat, end.lon)
-                    self.create_line_segment(start, end)
-                    self.start_of_line_segment = pos
-                    self.line_drawing_mode = False
-        else:
-            self.alternate = True
+        # mouse isn't scrolling and touch is actually on map
+        if not touch.is_mouse_scrolling and self.is_touch_on_map(touch):
+            if self.alternate:
+                self.alternate = False
+                pos = (touch.x, touch.y)
+                if self.draw_mode:
+                    if not self.line_drawing_mode:
+                        self.line_drawing_mode = True
+                    else:
+                        start = (self.start_of_line_segment.lat,
+                                 self.start_of_line_segment.lon)
+                        end = self.get_latlon_at(pos[0], pos[1])
+                        end = (end.lat, end.lon)
+                        self.create_line_segment(start, end)
+                        self.start_of_line_segment = pos
+                        self.line_drawing_mode = False
+            else:
+                self.alternate = True
         return super().on_touch_up(touch)
 
     def on_touch_move(self, touch):
@@ -147,7 +153,7 @@ class DrawableMapView(MapView):
 
     def add_marker_at_pos(self, pos, is_start_of_line_segment=False):
         """
-        Adds a marker at pos where pos is a tuple of x and y coordinates
+        Adds a marker at pos where pos is a tuple of x and y pixel values
         """
         x = pos[0]
         y = pos[1]
@@ -155,10 +161,12 @@ class DrawableMapView(MapView):
         marker = MapMarker()
         if is_start_of_line_segment:
             self.start_of_line_segment = marker
+            self.line_segments.append([])
         marker.source = "resources/images/marker.png"
         (marker.lat, marker.lon) = (coord.lat, coord.lon)
         marker.size = (10, 10)
         marker.color = (0.6, 0, 0, 1)  # brown
+        self.line_segments[len(self.line_segments)-1].append(marker)
         self.add_marker(marker)
 
     def add_marker_at_latlon(self, latlon):
@@ -167,15 +175,25 @@ class DrawableMapView(MapView):
         (marker.lat, marker.lon) = latlon
         marker.size = (10, 10)
         marker.color = (0.6, 0, 0, 1)  # brown
+        self.line_segments[len(self.line_segments)-1].append(marker)
         self.add_marker(marker)
 
     def undo(self):
         """
         Removes most recent line segment drawn
         """
-        pass
+        if not self.line_segments:
+            return
+        most_recent_line_segment = self.line_segments[len(
+            self.line_segments) - 1]
+        if len(most_recent_line_segment) == 1:
+            self.start_of_line_segment = None
+            self.line_drawing_mode = False
+        for marker in most_recent_line_segment:
+            self.remove_marker(marker)
+        self.line_segments = self.line_segments[0:len(self.line_segments) - 1]
 
-    def create_line_segment(self, start, end, num_points=50):
+    def create_line_segment(self, start, end, num_points=20):
         """
         Creates a line segment of discrete points with endpoints of start and end
         number of points between line segment determined by num_points
@@ -228,12 +246,32 @@ class DrawableMapView(MapView):
             self._default_marker_layer = None
             self.start_of_line_segment = None
             self.line_drawing_mode = False
+            self.line_segments = []
 
     def get_latlon_at(self, x, y, zoom=None):
         """
         Gets lat lon at a given coordinated, calibrated for the offset on our app
         """
         return super().get_latlon_at(x, y - 115, zoom=zoom)
+
+    def is_touch_on_map(self, touch):
+        """
+        determines if touch is on visible portion of map
+        """
+        return touch.y >= self.bottom_of_map and touch.y <= self.top_of_map
+
+    def calculate_top_and_bottom_of_map(self):
+        """
+        Calculates top and bottom of map
+        """
+        app = App.get_running_app()
+        map_window_ids = app.root.children[0].ids
+        title_FloatLayout = map_window_ids["title_FloatLayout"]
+        drawing_tools_GridLayout = map_window_ids["drawing_tools_GridLayout"]
+        self.top_of_map = title_FloatLayout.center_y - \
+            (title_FloatLayout.height / 2)
+        self.bottom_of_map = drawing_tools_GridLayout.center_y + \
+            (drawing_tools_GridLayout.height / 2)
 
     def set_map_source(self):
         """
