@@ -82,8 +82,8 @@ class DrawableMapView(MapView):
     line_drawing_mode = BooleanProperty(False)
     start_of_line_segment = None
     # For some reason, up clicks are detected twice so hacky way to prevent that
-    alternate = BooleanProperty(False)
     # TODO maybe find a better solution to this
+    alternate = BooleanProperty(False)
 
     bottom_of_map = 0
     top_of_map = 0
@@ -116,8 +116,6 @@ class DrawableMapView(MapView):
         if self.draw_mode and not touch.is_mouse_scrolling and self.is_touch_on_map(touch):
             if not self.line_drawing_mode:
                 self.add_marker_at_pos(pos, True)
-            else:
-                self.add_marker_at_pos(pos)
         return super().on_touch_down(touch)
 
     def on_touch_up(self, touch):
@@ -208,7 +206,7 @@ class DrawableMapView(MapView):
 
         current_x = start_x
         current_y = start_y
-        for i in range(num_points):
+        for i in range(num_points + 1):
             current_x += x_dist_between_points
             current_y += y_dist_between_points
             self.add_marker_at_latlon((current_x, current_y))
@@ -272,6 +270,16 @@ class DrawableMapView(MapView):
             (title_FloatLayout.height / 2)
         self.bottom_of_map = drawing_tools_GridLayout.center_y + \
             (drawing_tools_GridLayout.height / 2)
+
+    def run_path(self):
+        """
+        Constructs and returns list of coordinates to send to Rover
+        """
+        coords = []
+        for paths in self.line_segments:
+            for marker in paths:
+                coords.append((marker.lat, marker.lon))
+        return coords
 
     def set_map_source(self):
         """
