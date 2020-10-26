@@ -3,10 +3,20 @@
 WindowManager:
     HomeWindow:
     MapWindow:
+    InstructionsWindow:
 
 # Home Navigation Window
 <HomeWindow>:
     name: "home_window"
+
+    #Video:
+      #  source: "resources/images/test.avi"
+     #   pos: self.pos
+      #  size: self.size
+
+
+
+
     GridLayout:
         rows: 2
         columns: 1
@@ -39,12 +49,49 @@ WindowManager:
                     root.manager.transition.direction = "left"
             Button:
                 text: "Instructions"
+                on_release:
+                    app.root.current = "instructions_window"
+                    root.manager.transition.direction = "left"
             Button:
                 text: "Documentation"
+                on_release:
+                    root.open_documentation()
             Button:
                 text: "Project Information"
                 on_release:
                     root.open_projectinfo("https://ewb.engineering.cornell.edu/subteams.html")
+
+
+<InstructionsWindow>:
+    name: "instructions_window"
+    GridLayout:
+        id: instructions_grid
+        rows: 3
+        columns: 1
+        spacing: 100
+        Button:
+            pos_hint: {"x": 0.02, "center_y": 0.5}
+            size_hint: (0.1, 0.8)
+            text: "Home"
+            on_release: 
+                app.root.current = "home_window"
+                root.manager.transition.direction = "right"
+        Label:
+            text: root.current_instruction
+        GridLayout:
+            columns: 2
+            rows: 1
+            Button:
+                text: "Previous"
+                on_release: root.goBack()
+            Button:
+                text: "Next"
+                on_release: root.updateInstructions()
+         
+
+
+
+
 
 <LoadDialog>:
     BoxLayout:

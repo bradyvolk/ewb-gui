@@ -1,13 +1,14 @@
 '''
 Application built from a  .kv file
 '''
-
+from os.path import dirname, join, normpath
 from kivy.config import Config
 from kivy.core.window import Window
 from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.app import App
+from kivy.uix.video import Video
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
 from kivy.garden.mapview import MapView
@@ -17,6 +18,7 @@ from kivy.properties import ObjectProperty
 from kivy.properties import BooleanProperty
 from kivy.clock import Clock
 from kivy.uix.floatlayout import FloatLayout
+from kivy.properties import StringProperty
 from kivy.factory import Factory
 from kivy.uix.popup import Popup
 import os
@@ -25,10 +27,42 @@ import kivy
 kivy.require('1.0.7')
 
 
+class InstructionsWindow(Screen):
+    current_instruction = StringProperty()
+    instructions = ["step 1", "step 2", "step 3"]
+    index = 0
+
+    def __init__(self, **kwargs):
+        super(InstructionsWindow, self).__init__(**kwargs)
+        self.current_instruction = self.instructions[self.index]
+
+    "Instructions Window"
+
+    def goBack(self):
+        if self.index > 0:
+            self.index -= 1
+        self.current_instruction = self.instructions[self.index]
+
+    def updateInstructions(self):
+        if self.index < (len(self.instructions)-1):
+            self.index += 1
+        self.current_instruction = self.instructions[self.index]
+
+
 class HomeWindow(Screen):
     """
     Login screen
     """
+
+    def open_documentation(self):
+        curdir = dirname(__file__)
+        filename = join(curdir, 'resources')
+        filename = join(filename, 'pdfs')
+        filename = join(filename, 'Electrical%20Build.pdf')
+        filename = filename + ""
+        filename = filename.replace("\\", "/")
+        print(filename)
+        webbrowser.open("file:///" + filename)
 
     def open_projectinfo(self, weblink):
         webbrowser.open(weblink)
@@ -307,4 +341,5 @@ class MyMainApp(App):
 
 # Main Loop
 if __name__ == "__main__":
+
     MyMainApp().run()
