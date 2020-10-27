@@ -9,10 +9,10 @@ WindowManager:
 <HomeWindow>:
     name: "home_window"
 
-    #Video:
-      #  source: "resources/images/test.avi"
-     #   pos: self.pos
-      #  size: self.size
+    # Video:
+    #    source: "resources/images/test.avi"
+    #    pos: self.pos
+    #    size: self.size
 
 
 
@@ -135,6 +135,8 @@ WindowManager:
                 size_hint: (0.1, 0.8)
                 text: "Home"
                 on_release: 
+                    if root.ids["map"].draw_mode: \
+                    root.ids["map"].toggle_draw_mode()
                     app.root.current = "home_window"
                     root.manager.transition.direction = "right"
             Label:

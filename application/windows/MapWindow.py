@@ -189,6 +189,29 @@ class DrawableMapView(MapView):
             current_y += y_dist_between_points
             self.add_marker_at_latlon((current_x, current_y))
 
+    def create_line_segment_with_fixed_distance(self, start, end):
+        """
+        This does not work yet.
+        """
+        # TODO need to determine lat and lon intervals by a switch-like statement
+        (lat_interval, lon_interval) = (0.01, 0.01)
+        (start_lat, start_lon) = start
+        (end_lat, end_lon) = end
+        dist_lat = end_lat - start_lat
+        dist_lon = end_lon - start_lon
+        slope = (dist_lon / dist_lat)
+        lat_interval = lat_interval*(-1) if dist_lat < 0 else lat_interval
+        lon_interval = lon_interval*(-1) if dist_lon < 0 else lon_interval
+
+        lon_interval = lon_interval * slope
+
+        current_lat = start_lat
+        current_lon = start_lon
+        while current_lat >= end_lat:
+            current_lat += lat_interval
+            current_lon += lon_interval
+            self.add_marker_at_latlon((current_lat, current_lon))
+
     def toggle_draw_mode(self):
         """
         Turns on and off draw mode
