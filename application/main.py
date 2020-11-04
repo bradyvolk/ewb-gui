@@ -1,5 +1,13 @@
 """
-Application built from a  .kv file
+Main file for application.
+
+Imports the other windows where most of the action is for our code.
+
+Three Windows as of now:
+(1) HomeWindow - home screen of the application
+(2) MapWindow - central function of application
+(3) InstructionsWindow - windows for instructions on using application
+
 """
 
 from kivy.config import Config
@@ -12,9 +20,10 @@ from kivy.uix.video import Video
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
 from kivy.properties import StringProperty
+from windows.HomeWindow import HomeWindow
 from windows.MapWindow import MapWindow
 from windows.InstructionsWindow import InstructionsWindow
-from windows.HomeWindow import HomeWindow
+
 
 import kivy
 kivy.require('1.0.7')

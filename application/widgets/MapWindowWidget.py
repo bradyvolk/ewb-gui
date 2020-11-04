@@ -1,3 +1,7 @@
+"""
+Contains template rules for MapWindow in kv language
+"""
+
 from kivy.lang import Builder
 
 Builder.load_string("""

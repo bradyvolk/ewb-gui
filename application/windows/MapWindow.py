@@ -1,4 +1,8 @@
-__all__ = ["MapWindow", "LoadDialog", "DrawableMapView"]
+"""
+Contains definition for MapWindow classes
+and all of the functionality contained
+within the map_window screen of our application
+"""
 
 from kivy.core.window import Window
 from kivy.uix.button import Button
@@ -192,7 +196,10 @@ class DrawableMapView(MapView):
 
     def create_line_segment_with_fixed_distance(self, start, end):
         """
-        This does not work yet.
+        # TODO This does not work yet. Ultimately, we want to 
+        set the distance between GPS markers to be fixed, i.e. not
+        based on distance between the two points in any sense or based
+        on the zoom of the user
         """
         # TODO need to determine lat and lon intervals by a switch-like statement
         (lat_interval, lon_interval) = (0.01, 0.01)
