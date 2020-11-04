@@ -1,3 +1,7 @@
+"""
+Class definition for InstructionsWindow
+"""
+
 from kivy.properties import StringProperty
 from kivy.uix.screenmanager import Screen
 import widgets.InstructionsWindowWidget

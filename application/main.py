@@ -10,16 +10,10 @@ Three Windows as of now:
 
 """
 
-from kivy.config import Config
 from kivy.core.window import Window
-from kivy.uix.button import Button
-from kivy.uix.gridlayout import GridLayout
-from kivy.uix.label import Label
 from kivy.app import App
-from kivy.uix.video import Video
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
-from kivy.properties import StringProperty
 from windows.HomeWindow import HomeWindow
 from windows.MapWindow import MapWindow
 from windows.InstructionsWindow import InstructionsWindow

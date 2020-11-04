@@ -1,10 +1,14 @@
+"""
+Class definition for HomeWindow
+"""
+
 from kivy.uix.screenmanager import Screen
 import os
 import webbrowser
 import widgets.HomeWindowWidget
 from os.path import dirname, join, normpath
 
-# Functions run when HomeWindow Screen becomes current directory 
+
 class HomeWindow(Screen):
     """
     Login screen

@@ -1,6 +1,10 @@
+"""
+Design of HomeWindow screen in Kv langauge
+"""
+
+
 from kivy.lang import Builder
 
-# Design of HomeWindow screen in Kv langauge
 Builder.load_string("""
 <HomeWindow>:
     name: "home_window"
