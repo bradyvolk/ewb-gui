@@ -17,6 +17,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import StringProperty
 from kivy.uix.popup import Popup
 from kivy.factory import Factory
+import widgets.MapWindowWidget
 
 
 class MapWindow(Screen):
