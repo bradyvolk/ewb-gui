@@ -1,5 +1,6 @@
 from kivy.lang import Builder
 
+#Design Instructions for Instructions window in Kv language 
 Builder.load_string("""
 <InstructionsWindow>:
     name: "instructions_window"

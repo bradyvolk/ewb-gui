@@ -4,7 +4,7 @@ import webbrowser
 import widgets.HomeWindowWidget
 from os.path import dirname, join, normpath
 
-
+# Functions run when HomeWindow Screen becomes current directory 
 class HomeWindow(Screen):
     """
     Login screen
