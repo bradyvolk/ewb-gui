@@ -44,10 +44,10 @@ Builder.load_string("""
             size_hint_y: 2
             AnchorLayout:
                 id: map_anchor 
-                achor_y: "top"  
+                achor_y: "bottom"  
                 FloatLayout:  
                     DrawableMapView:
-                        pos_hint: {'top': 1}
+                        pos_hint: {'top': 1, 'bottom': 1}
                         id: map
                         canvas:
                             Rectangle:
@@ -61,54 +61,53 @@ Builder.load_string("""
                     #     opacity: 0
 
         # Map Drawing Tools
-        BoxLayout:
+        GridLayout:
+            id: drawing_tools_GridLayout
+            name: "drawing_tools"
+            size_hint_y: 0.5
+            cols: 2
+            padding: 20
             GridLayout:
-                id: drawing_tools_GridLayout
-                name: "drawing_tools"
-                size_hint_y: 0.5
-                cols: 2
-                padding: 20
-                GridLayout:
-                    cols: 6
-                    size_hint_y: 0.3
-                    size_hint_x: 1
-                    AnchorLayout:
-                        Button:
-                            text: "Insert Image"
-                            size_hint: (1, 0.6)
-                    AnchorLayout:
-                        Button:
-                            text: "Undo"
-                            size_hint: (1, 0.6)
-                            padding_x: 10
-                    AnchorLayout:
-                        Button:
-                            text: "Clear"
-                            size_hint: (1, 0.6)
-                            padding_x: 10
-                    AnchorLayout:
-                        Button:
-                            text: "Polygon"
-                            size_hint: (1, 0.6)
-                            padding_x: 10
-                    AnchorLayout:
-                        Button:
-                            text: "Lasso"
-                            size_hint: (1, 0.6)
-                            padding_x: 10
-                    AnchorLayout:
-                        Button:
-                            id: draw_mode_button
-                            text: "Draw Path"
-                            size_hint: (1, 0.6)
-                            padding_x: 10
+                cols: 6
+                size_hint_y: 0.3
+                size_hint_x: 1
                 AnchorLayout:
-                    anchor_x: "right"
-                    size_hint_x: 0.3
-                    padding: 10
                     Button:
-                        text: "Run"
-                        size_hint: (1, 1)
+                        text: "Insert Image"
+                        size_hint: (1, 0.6)
+                AnchorLayout:
+                    Button:
+                        text: "Undo"
+                        size_hint: (1, 0.6)
+                        padding_x: 10
+                AnchorLayout:
+                    Button:
+                        text: "Clear"
+                        size_hint: (1, 0.6)
+                        padding_x: 10
+                AnchorLayout:
+                    Button:
+                        text: "Polygon"
+                        size_hint: (1, 0.6)
+                        padding_x: 10
+                AnchorLayout:
+                    Button:
+                        text: "Lasso"
+                        size_hint: (1, 0.6)
+                        padding_x: 10
+                AnchorLayout:
+                    Button:
+                        id: draw_mode_button
+                        text: "Draw Path"
+                        size_hint: (1, 0.6)
+                        padding_x: 10
+            AnchorLayout:
+                anchor_x: "right"
+                size_hint_x: 0.3
+                padding: 10
+                Button:
+                    text: "Run"
+                    size_hint: (1, 1)
 
 <LoadDialog>:
     BoxLayout:
