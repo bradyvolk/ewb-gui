@@ -21,6 +21,11 @@ Builder.load_string("""
         FloatLayout:
             id: title_FloatLayout
             size_hint_y: 0.2
+            canvas.before:
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+                    source: "resources/images/dark-grey.jpg"
             Button:
                 pos_hint: {"x": 0.02, "center_y": 0.5}
                 size_hint: (0.1, 0.8)
@@ -42,17 +47,13 @@ Builder.load_string("""
             id: map_container
             orientation: "horizontal"
             size_hint_y: 2
-            AnchorLayout:
-                id: map_anchor 
-                achor_y: "bottom"  
-                FloatLayout:  
-                    DrawableMapView:
-                        pos_hint: {'top': 1, 'bottom': 1}
-                        id: map
-                        canvas:
-                            Rectangle:
-                                source: 'resources/images/tanzania_drone_pic2.jpg'
-                                size: self.size
+            DrawableMapView:
+                pos_hint: {'top': 1, 'bottom': 1}
+                id: map
+                canvas:
+                    Rectangle:
+                        source: 'resources/images/tanzania_drone_pic2.jpg'
+                        size: self.size
                     # Image:
                     #     id: draw_image
                     #     source: "resources/images/marker.png"
@@ -67,6 +68,11 @@ Builder.load_string("""
             size_hint_y: 0.5
             cols: 2
             padding: 20
+            canvas.before:
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+                    source: "resources/images/dark-grey.jpg"
             GridLayout:
                 cols: 6
                 size_hint_y: 0.3
