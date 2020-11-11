@@ -56,9 +56,6 @@ class DrawableMapView(Scatter):
 
     def __init__(self, **kwargs):
         self.do_rotation = False
-        self.do_translate = True
-        self.do_collide_after_children = False
-        self.auto_bring_to_front = False
         super().__init__(**kwargs)
 
     def on_touch_down(self, touch):
