@@ -38,3 +38,5 @@ def fill_array(GPS_coords, H, W, tl, tr, bl):
             GPS_coords[z][i] = (x + x_scaled, y + (x_scaled*slope1))
 
     return GPS_coords
+
+    hi
