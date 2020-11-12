@@ -39,4 +39,4 @@ def fill_array(GPS_coords, H, W, tl, tr, bl):
 
     return GPS_coords
 
-    hi
+
