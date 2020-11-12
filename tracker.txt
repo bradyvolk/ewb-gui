@@ -1,0 +1,14 @@
+Current Tasks:
+- Custom map creation/navigation
+    - Side-scrolling
+    - Zooming
+    - Ensuring GPS-Pixel conversions remain consistent with transformations
+- Update dependencies / debugging
+
+Completed Tasks (include completed task and date)
+- 
+
+Technical Challenges/Roadblocks:
+- (insert here as specific as possible, including issue and relevant 
+    lines of code)
+
