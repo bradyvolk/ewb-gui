@@ -4,11 +4,17 @@ and all of the functionality contained
 within the map_window screen of our application
 """
 
+from os.path import join, dirname
+from itertools import takewhile
 from kivy.core.window import Window
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.app import App
 from kivy.uix.video import Video
+from kivy.uix.behaviors import ButtonBehavior
+from kivy.uix.image import Image
+from kivy.uix.widget import Widget
+from kivy.graphics import Canvas, Color, Rectangle
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
 from kivy.garden.mapview import MapView
@@ -16,11 +22,13 @@ from kivy.garden.mapview import MapMarker
 from kivy.garden.mapview import MarkerMapLayer
 from kivy.properties import ObjectProperty
 from kivy.properties import BooleanProperty
+from kivy.properties import NumericProperty
 from kivy.clock import Clock
 from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import StringProperty
 from kivy.uix.popup import Popup
 from kivy.factory import Factory
+from kivy.uix.scatter import Scatter
 import widgets.MapWindowWidget
 
 
@@ -49,250 +57,217 @@ class MapWindow(Screen):
         self.dismiss_popup()
 
 
+class MapMarker(ButtonBehavior, Image):
+    """A marker on a map, that must be used on a :class:`MapMarker`
+    """
+
+    anchor_x = NumericProperty(0.5)
+    """Anchor of the marker on the X axis. Defaults to 0.5, mean the anchor will
+    be at the X center of the image.
+    """
+
+    anchor_y = NumericProperty(0)
+    """Anchor of the marker on the Y axis. Defaults to 0, mean the anchor will
+    be at the Y bottom of the image.
+    """
+
+    lat = NumericProperty(0)
+    """Latitude of the marker
+    """
+
+    lon = NumericProperty(0)
+    """Longitude of the marker
+    """
+
+    source = StringProperty(join(dirname(__file__), "icons", "marker.png"))
+    """Source of the marker, defaults to our own marker.png
+    """
+
+    # (internal) reference to its layer
+    _layer = None
+
+    def detach(self):
+        if self._layer:
+            self._layer.remove_widget(self)
+            self._layer = None
+
+
+class MapLayer(Widget):
+    """A map layer, that is repositionned everytime the :class:`MapView` is
+    moved.
+    """
+    viewport_x = NumericProperty(0)
+    viewport_y = NumericProperty(0)
+
+    def reposition(self):
+        """Function called when :class:`MapView` is moved. You must recalculate
+        the position of your children.
+        """
+        pass
+
+    def unload(self):
+        """Called when the view want to completly unload the layer.
+        """
+        pass
+
+
+class MarkerMapLayer(MapLayer):
+    """A map layer for :class:`MapMarker`
+    """
+    order_marker_by_latitude = BooleanProperty(True)
+
+    def __init__(self, **kwargs):
+        self.markers = []
+        super(MarkerMapLayer, self).__init__(**kwargs)
+
+    def insert_marker(self, marker, **kwargs):
+        if self.order_marker_by_latitude:
+            before = list(takewhile(
+                lambda i_m: i_m[1].lat < marker.lat,
+                enumerate(self.children)
+            ))
+            if before:
+                kwargs['index'] = before[-1][0] + 1
+
+        super(MarkerMapLayer, self).add_widget(marker, **kwargs)
+
+    def add_widget(self, marker):
+        marker._layer = self
+        self.markers.append(marker)
+        self.insert_marker(marker)
+
+    def remove_widget(self, marker):
+        marker._layer = None
+        if marker in self.markers:
+            self.markers.remove(marker)
+        super(MarkerMapLayer, self).remove_widget(marker)
+
+    def reposition(self):
+        if not self.markers:
+            return
+        mapview = self.parent
+        set_marker_position = self.set_marker_position
+        bbox = None
+        # reposition the markers depending the latitude
+        markers = sorted(self.markers, key=lambda x: -x.lat)
+        margin = max((max(marker.size) for marker in markers))
+        bbox = mapview.get_bbox(margin)
+        for marker in markers:
+            if bbox.collide(marker.lat, marker.lon):
+                set_marker_position(mapview, marker)
+                if not marker.parent:
+                    self.insert_marker(marker)
+            else:
+                super(MarkerMapLayer, self).remove_widget(marker)
+
+    def set_marker_position(self, mapview, marker):
+        x, y = mapview.get_window_xy_from(marker.lat, marker.lon, mapview.zoom)
+        marker.x = int(x - marker.width * marker.anchor_x)
+        marker.y = int(y - marker.height * marker.anchor_y)
+
+    def unload(self):
+        self.clear_widgets()
+        del self.markers[:]
+
+
+class DrawableMapView(Scatter):
+    """
+    """
+
+    def __init__(self, **kwargs):
+        self.do_rotation = False
+        self.zoom = self.scale
+        self._default_marker_layer = None
+        self._layers = []
+        self.canvas = Canvas()
+        with self.canvas:
+            self.canvas_map = Canvas()
+            self.canvas_layers = Canvas()
+        with self.canvas:
+            self.canvas_layers_out = Canvas()
+        super().__init__(**kwargs)
+
+    def on_touch_down(self, touch):
+        x = touch.x
+        y = touch.y
+        coord = self.get_latlon_at(x, y)
+        marker = MapMarker()
+        marker.source = "resources/images/marker.png"
+        (marker.lat, marker.lon) = (coord[0], coord[1])
+        marker.size = (10, 10)
+        marker.color = (0.6, 0, 0, 1)  # brown
+        self.add_marker(marker)
+        super().on_touch_down(touch)
+
+    def collide_point(self, x, y):
+        # print "collide_point", x, y
+        return True
+
+    def get_latlon_at(self, x, y):
+        return (100, 100)
+
+    def add_marker(self, marker, layer=None):
+        """Add a marker into the layer. If layer is None, it will be added in
+        the default marker layer. If there is no default marker layer, a new
+        one will be automatically created
+        """
+        if layer is None:
+            if not self._default_marker_layer:
+                layer = MarkerMapLayer()
+                self.add_layer(layer)
+            else:
+                layer = self._default_marker_layer
+        layer.add_widget(marker)
+        layer.set_marker_position(self, marker)
+
+    def remove_marker(self, marker):
+        """Remove a marker from its layer
+        """
+        marker.detach()
+
+    def add_layer(self, layer, mode="window"):
+        """Add a new layer to update at the same time the base tile layer.
+        mode can be either "scatter" or "window". If "scatter", it means the
+        layer will be within the scatter transformation. It's perfect if you
+        want to display path / shape, but not for text.
+        If "window", it will have no transformation. You need to position the
+        widget yourself: think as Z-sprite / billboard.
+        Defaults to "window".
+        """
+        assert (mode in ("scatter", "window"))
+        if self._default_marker_layer is None and \
+                isinstance(layer, MarkerMapLayer):
+            self._default_marker_layer = layer
+        self._layers.append(layer)
+        c = self.canvas
+        if mode == "scatter":
+            self.canvas = self.canvas_layers
+        else:
+            self.canvas = self.canvas_layers_out
+        layer.canvas_parent = self.canvas
+        super().add_widget(layer)
+        self.canvas = c
+
+    def remove_layer(self, layer):
+        """Remove the layer
+        """
+        c = self.canvas
+        self._layers.remove(layer)
+        self.canvas = layer.canvas_parent
+        super().remove_widget(layer)
+        self.canvas = c
+
+    def get_window_xy_from(self, lat, lon, zoom):
+        """Returns the x/y position in the widget absolute coordinates
+        from a lat/lon"""
+        x = lat
+        y = lon
+        return x, y
+
+
 class LoadDialog(FloatLayout):
     load = ObjectProperty(None)
     cancel = ObjectProperty(None)
 
 
 Factory.register('LoadDialog', cls=LoadDialog)
-
-
-class DrawableMapView(MapView):
-    """
-    Garden MapView, but it's drawable
-    """
-    draw_mode = BooleanProperty(False)
-    line_drawing_mode = BooleanProperty(False)
-    start_of_line_segment = None
-    # For some reason, up clicks are detected twice so hacky way to prevent that
-    # TODO maybe find a better solution to this
-    alternate = BooleanProperty(False)
-
-    bottom_of_map = 0
-    top_of_map = 0
-    line_segments = []
-
-    def __init__(self, **kwargs):
-        Window.bind(mouse_pos=self.on_mouse_pos)
-        return super().__init__()
-
-    def on_mouse_pos(self, instance, pos):
-        """
-        Used to set position for drawing and erasing labels
-        when the user is in those modes
-        """
-        (x, y) = pos
-        app = App.get_running_app()
-        map_window_ids = app.root.children[0].ids
-        if self.draw_mode:
-            draw_image = map_window_ids["draw_image"]
-            draw_image.center_x = x
-            draw_image.center_y = y
-
-    def on_touch_down(self, touch):
-        """
-        if in draw_mode, place a marker at the touch
-        """
-        self.calculate_top_and_bottom_of_map()
-        pos = (touch.x, touch.y)
-        # make sure in draw mode, mouse isn't scrolling, and touch is actually on map
-        if self.draw_mode and not touch.is_mouse_scrolling and self.is_touch_on_map(touch):
-            if not self.line_drawing_mode:
-                self.add_marker_at_pos(pos, True)
-        return super().on_touch_down(touch)
-
-    def on_touch_up(self, touch):
-        """
-        if in draw_mode, and in line_drawing_mode, place an endpoint for the line
-        segment and fill in points in between
-        otherwise, if in draw_mode, just change line_drawing_mode to True
-        """
-        # mouse isn't scrolling and touch is actually on map
-        if not touch.is_mouse_scrolling and self.is_touch_on_map(touch):
-            if self.alternate:
-                self.alternate = False
-                pos = (touch.x, touch.y)
-                if self.draw_mode:
-                    if not self.line_drawing_mode:
-                        self.line_drawing_mode = True
-                    else:
-                        start = (self.start_of_line_segment.lat,
-                                 self.start_of_line_segment.lon)
-                        end = self.get_latlon_at(pos[0], pos[1])
-                        end = (end.lat, end.lon)
-                        self.create_line_segment(start, end)
-                        self.start_of_line_segment = pos
-                        self.line_drawing_mode = False
-            else:
-                self.alternate = True
-        return super().on_touch_up(touch)
-
-    def on_touch_move(self, touch):
-        """
-        """
-        pass
-
-    def add_marker_at_pos(self, pos, is_start_of_line_segment=False):
-        """
-        Adds a marker at pos where pos is a tuple of x and y pixel values
-        """
-        x = pos[0]
-        y = pos[1]
-        coord = self.get_latlon_at(x, y)
-        marker = MapMarker()
-        if is_start_of_line_segment:
-            self.start_of_line_segment = marker
-            self.line_segments.append([])
-        marker.source = "resources/images/marker.png"
-        (marker.lat, marker.lon) = (coord.lat, coord.lon)
-        marker.size = (10, 10)
-        marker.color = (0.6, 0, 0, 1)  # brown
-        self.line_segments[len(self.line_segments)-1].append(marker)
-        self.add_marker(marker)
-
-    def add_marker_at_latlon(self, latlon):
-        marker = MapMarker()
-        marker.source = "resources/images/marker.png"
-        (marker.lat, marker.lon) = latlon
-        marker.size = (10, 10)
-        marker.color = (0.6, 0, 0, 1)  # brown
-        self.line_segments[len(self.line_segments)-1].append(marker)
-        self.add_marker(marker)
-
-    def undo(self):
-        """
-        Removes most recent line segment drawn
-        """
-        if not self.line_segments:
-            return
-        most_recent_line_segment = self.line_segments[len(
-            self.line_segments) - 1]
-        if len(most_recent_line_segment) == 1:
-            self.start_of_line_segment = None
-            self.line_drawing_mode = False
-        for marker in most_recent_line_segment:
-            self.remove_marker(marker)
-        self.line_segments = self.line_segments[0:len(self.line_segments) - 1]
-
-    def create_line_segment(self, start, end, num_points=20):
-        """
-        Creates a line segment of discrete points with endpoints of start and end
-        number of points between line segment determined by num_points
-        non-endpoints are added as markers to map
-        """
-        (start_x, start_y) = start
-        (end_x, end_y) = end
-        dist_x = end_x - start_x
-        dist_y = end_y - start_y
-        x_dist_between_points = dist_x / (num_points + 1)
-        y_dist_between_points = dist_y / (num_points + 1)
-
-        current_x = start_x
-        current_y = start_y
-        for i in range(num_points + 1):
-            current_x += x_dist_between_points
-            current_y += y_dist_between_points
-            self.add_marker_at_latlon((current_x, current_y))
-
-    def create_line_segment_with_fixed_distance(self, start, end):
-        """
-        # TODO This does not work yet. Ultimately, we want to 
-        set the distance between GPS markers to be fixed, i.e. not
-        based on distance between the two points in any sense or based
-        on the zoom of the user
-        """
-        # TODO need to determine lat and lon intervals by a switch-like statement
-        (lat_interval, lon_interval) = (0.01, 0.01)
-        (start_lat, start_lon) = start
-        (end_lat, end_lon) = end
-        dist_lat = end_lat - start_lat
-        dist_lon = end_lon - start_lon
-        slope = (dist_lon / dist_lat)
-        lat_interval = lat_interval*(-1) if dist_lat < 0 else lat_interval
-        lon_interval = lon_interval*(-1) if dist_lon < 0 else lon_interval
-
-        lon_interval = lon_interval * slope
-
-        current_lat = start_lat
-        current_lon = start_lon
-        while current_lat >= end_lat:
-            current_lat += lat_interval
-            current_lon += lon_interval
-            self.add_marker_at_latlon((current_lat, current_lon))
-
-    def toggle_draw_mode(self):
-        """
-        Turns on and off draw mode
-        """
-        self.draw_mode = not self.draw_mode
-        app = App.get_running_app()
-        map_window_ids = app.root.children[0].ids
-        draw_mode_button = map_window_ids["draw_mode_button"]
-        draw_image = map_window_ids["draw_image"]
-        if self.draw_mode:
-            draw_mode_button.background_color = (0.5, 0.5, 0.5, 1)
-            draw_image.opacity = 1
-        else:
-            draw_mode_button.background_color = (1, 1, 1, 1)
-            draw_image.opacity = 0
-        self.toggle_translation()
-
-    def toggle_translation(self):
-        """
-        Turns on and off map translation
-        """
-        self._scatter.do_translation_x = not self._scatter.do_translation_x
-        self._scatter.do_translation_y = not self._scatter.do_translation_y
-
-    def clear_paths_drawn(self):
-        """
-        Clears all paths drawn
-        """
-        if self._default_marker_layer:
-            self.remove_layer(self._default_marker_layer)
-            self._default_marker_layer = None
-            self.start_of_line_segment = None
-            self.line_drawing_mode = False
-            self.line_segments = []
-
-    def get_latlon_at(self, x, y, zoom=None):
-        """
-        Gets lat lon at a given coordinated, calibrated for the offset on our app
-        """
-        return super().get_latlon_at(x, y - 115, zoom=zoom)
-
-    def is_touch_on_map(self, touch):
-        """
-        determines if touch is on visible portion of map
-        """
-        return touch.y >= self.bottom_of_map and touch.y <= self.top_of_map
-
-    def calculate_top_and_bottom_of_map(self):
-        """
-        Calculates top and bottom of map
-        """
-        app = App.get_running_app()
-        map_window_ids = app.root.children[0].ids
-        title_FloatLayout = map_window_ids["title_FloatLayout"]
-        drawing_tools_GridLayout = map_window_ids["drawing_tools_GridLayout"]
-        self.top_of_map = title_FloatLayout.center_y - \
-            (title_FloatLayout.height / 2)
-        self.bottom_of_map = drawing_tools_GridLayout.center_y + \
-            (drawing_tools_GridLayout.height / 2)
-
-    def run_path(self):
-        """
-        Constructs and returns list of coordinates to send to Rover
-        """
-        coords = []
-        for paths in self.line_segments:
-            for marker in paths:
-                coords.append((marker.lat, marker.lon))
-        return coords
-
-    def set_map_source(self):
-        """
-        Sets the map source for our code
-        """
-        # TODO figure out how to change the map out with the insert image button
-        pass

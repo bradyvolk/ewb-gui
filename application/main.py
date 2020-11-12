@@ -17,10 +17,12 @@ from kivy.lang import Builder
 from windows.HomeWindow import HomeWindow
 from windows.MapWindow import MapWindow
 from windows.InstructionsWindow import InstructionsWindow
-
+from kivy.clock import Clock
 
 import kivy
 kivy.require('1.0.7')
+
+Clock.max_iteration = 20
 
 
 class WindowManager(ScreenManager):
