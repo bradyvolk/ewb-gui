@@ -29,6 +29,7 @@ from kivy.properties import StringProperty
 from kivy.uix.popup import Popup
 from kivy.factory import Factory
 from kivy.uix.scatter import Scatter
+from kivy.graphics import Color
 import widgets.MapWindowWidget
 
 
@@ -55,41 +56,6 @@ class MapWindow(Screen):
     def load(self, path, filename):
         self.map_source = path
         self.dismiss_popup()
-
-
-class MapMarker(ButtonBehavior, Image):
-    """A marker on a map, that must be used on a :class:`MapMarker`
-    """
-
-    anchor_x = NumericProperty(0.5)
-    """Anchor of the marker on the X axis. Defaults to 0.5, mean the anchor will
-    be at the X center of the image.
-    """
-
-    anchor_y = NumericProperty(0)
-    """Anchor of the marker on the Y axis. Defaults to 0, mean the anchor will
-    be at the Y bottom of the image.
-    """
-
-    lat = NumericProperty(0)
-    """Latitude of the marker
-    """
-
-    lon = NumericProperty(0)
-    """Longitude of the marker
-    """
-
-    source = StringProperty(join(dirname(__file__), "icons", "marker.png"))
-    """Source of the marker, defaults to our own marker.png
-    """
-
-    # (internal) reference to its layer
-    _layer = None
-
-    def detach(self):
-        if self._layer:
-            self._layer.remove_widget(self)
-            self._layer = None
 
 
 class MapLayer(Widget):
@@ -172,6 +138,8 @@ class MarkerMapLayer(MapLayer):
 
 class DrawableMapView(Scatter):
     """
+    Main MapView on which we will put our images
+    and where we will draw
     """
 
     def __init__(self, **kwargs):
@@ -190,79 +158,27 @@ class DrawableMapView(Scatter):
     def on_touch_down(self, touch):
         x = touch.x
         y = touch.y
-        coord = self.get_latlon_at(x, y)
-        marker = MapMarker()
-        marker.source = "resources/images/marker.png"
-        (marker.lat, marker.lon) = (coord[0], coord[1])
-        marker.size = (10, 10)
-        marker.color = (0.6, 0, 0, 1)  # brown
-        self.add_marker(marker)
+        absolute_pos = self.to_local(x, y)
+        print(absolute_pos)
+        print(x, y)
+        with self.canvas:
+            Color(0, 0, 1, 1, mode='rgba')
+            self.rect = Rectangle(
+                pos=(absolute_pos[0], absolute_pos[1]), size=(50, 50))
         super().on_touch_down(touch)
+
+    # def on_translation(self, touch):
+    #     x = touch.x
+    #     y = touch.y
+    #     print(x, y)
+    #     with self.canvas:
+    #         Color(1, 0, 0, 0.5, mode='rgba')
+    #         self.rect = Rectangle(pos=(touch.x, touch.y), size=(50, 50))
+    #     super().on_translation(touch)
 
     def collide_point(self, x, y):
         # print "collide_point", x, y
         return True
-
-    def get_latlon_at(self, x, y):
-        return (100, 100)
-
-    def add_marker(self, marker, layer=None):
-        """Add a marker into the layer. If layer is None, it will be added in
-        the default marker layer. If there is no default marker layer, a new
-        one will be automatically created
-        """
-        if layer is None:
-            if not self._default_marker_layer:
-                layer = MarkerMapLayer()
-                self.add_layer(layer)
-            else:
-                layer = self._default_marker_layer
-        layer.add_widget(marker)
-        layer.set_marker_position(self, marker)
-
-    def remove_marker(self, marker):
-        """Remove a marker from its layer
-        """
-        marker.detach()
-
-    def add_layer(self, layer, mode="window"):
-        """Add a new layer to update at the same time the base tile layer.
-        mode can be either "scatter" or "window". If "scatter", it means the
-        layer will be within the scatter transformation. It's perfect if you
-        want to display path / shape, but not for text.
-        If "window", it will have no transformation. You need to position the
-        widget yourself: think as Z-sprite / billboard.
-        Defaults to "window".
-        """
-        assert (mode in ("scatter", "window"))
-        if self._default_marker_layer is None and \
-                isinstance(layer, MarkerMapLayer):
-            self._default_marker_layer = layer
-        self._layers.append(layer)
-        c = self.canvas
-        if mode == "scatter":
-            self.canvas = self.canvas_layers
-        else:
-            self.canvas = self.canvas_layers_out
-        layer.canvas_parent = self.canvas
-        super().add_widget(layer)
-        self.canvas = c
-
-    def remove_layer(self, layer):
-        """Remove the layer
-        """
-        c = self.canvas
-        self._layers.remove(layer)
-        self.canvas = layer.canvas_parent
-        super().remove_widget(layer)
-        self.canvas = c
-
-    def get_window_xy_from(self, lat, lon, zoom):
-        """Returns the x/y position in the widget absolute coordinates
-        from a lat/lon"""
-        x = lat
-        y = lon
-        return x, y
 
 
 class LoadDialog(FloatLayout):
