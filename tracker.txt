@@ -18,6 +18,6 @@ Completed Tasks (include completed task and date)
 Technical Challenges/Roadblocks:
 - (insert here as specific as possible, including issue and relevant 
     lines of code)
-
+- Fix "Route Planning" background banner from getting darker when starting drawing, not sure why this is happening.
 
 
