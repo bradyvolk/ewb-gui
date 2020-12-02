@@ -90,11 +90,15 @@ Builder.load_string("""
                             text: "Undo"
                             size_hint: (1, 0.6)
                             padding_x: 10
+                            on_release: 
+                                root.ids["map"].undo()
                     AnchorLayout:
                         Button:
                             text: "Clear"
                             size_hint: (1, 0.6)
                             padding_x: 10
+                            on_release: 
+                                root.ids["map"].clear()
                     AnchorLayout:
                         Button:
                             text: "Polygon"
@@ -111,6 +115,8 @@ Builder.load_string("""
                             text: "Draw Path"
                             size_hint: (1, 0.6)
                             padding_x: 10
+                            on_release: 
+                                root.ids["map"].toggle_draw_mode()
                 AnchorLayout:
                     anchor_x: "right"
                     size_hint_x: 0.3

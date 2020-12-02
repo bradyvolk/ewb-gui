@@ -66,6 +66,7 @@ class DrawableMapView(Scatter):
     """
     lines = []
     first_position = None
+    draw_mode = False
 
     def __init__(self, **kwargs):
         self.do_rotation = False
@@ -76,36 +77,59 @@ class DrawableMapView(Scatter):
         When in draw_mode (TODO), make a line segment
         path based on current touch and last touch
         """
-        x = touch.x
-        y = touch.y
-        (abs_x, abs_y) = self.to_local(x, y)
-        with self.canvas:
-            Color(0, 0, 0, 1, mode='rgba')  # black
-            # Three cases:
-            # Case 1: no touches yet, so mark where first touch is
-            if not self.first_position:
-                self.first_position = (abs_x, abs_y)
-            else:
-                # Case 2: one touch so far, with this next touch make a line
-                # segment from first_position touch and current touch
-                if not self.lines:
-                    start_x = self.first_position[0]
-                    start_y = self.first_position[1]
-                    end_x = abs_x
-                    end_y = abs_y
-                    self.lines.append(
-                        Line(points=[start_x, start_y, end_x, end_y], width=5))
-                # Case 3: there are already line segments, so make a new line segment
-                # from our last made line segment's last endpoints and our current touch
+        if self.draw_mode:
+            x = touch.x
+            y = touch.y
+            (abs_x, abs_y) = self.to_local(x, y)
+            with self.canvas:
+                Color(0, 0, 0, 1, mode='rgba')  # black
+                # Three cases:
+                # Case 1: no touches yet, so mark where first touch is
+                if not self.first_position:
+                    self.first_position = (abs_x, abs_y)
                 else:
-                    last_line = self.lines[len(self.lines)-1]
-                    start_x = last_line.points[len(last_line.points)-2]
-                    start_y = last_line.points[len(last_line.points)-1]
-                    end_x = abs_x
-                    end_y = abs_y
-                    self.lines.append(
-                        Line(points=[start_x, start_y, end_x, end_y], width=5))
+                    # Case 2: one touch so far, with this next touch make a line
+                    # segment from first_position touch and current touch
+                    if not self.lines:
+                        start_x = self.first_position[0]
+                        start_y = self.first_position[1]
+                        end_x = abs_x
+                        end_y = abs_y
+                        self.lines.append(
+                            Line(points=[start_x, start_y, end_x, end_y], width=5))
+                    # Case 3: there are already line segments, so make a new line segment
+                    # from our last made line segment's last endpoints and our current touch
+                    else:
+                        last_line = self.lines[len(self.lines)-1]
+                        start_x = last_line.points[len(last_line.points)-2]
+                        start_y = last_line.points[len(last_line.points)-1]
+                        end_x = abs_x
+                        end_y = abs_y
+                        self.lines.append(
+                            Line(points=[start_x, start_y, end_x, end_y], width=5))
         super().on_touch_down(touch)
+
+    def toggle_draw_mode(self):
+        """
+        Turns on and off self.draw_mode
+        """
+        self.draw_mode = not self.draw_mode
+        self.do_translation_x = not self.do_translation_x
+        self.do_translation_y = not self.do_translation_y
+
+    def undo(self):
+        """
+        Removes the last drawn line
+        """
+        if self.lines:
+            self.lines.pop()
+
+    def clear(self):
+        """
+        Removes all drawn lines
+        """
+        self.lines = []
+        self.first_position = None
 
     def collide_point(self, x, y):
         # print "collide_point", x, y
