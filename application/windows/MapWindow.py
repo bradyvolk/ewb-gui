@@ -4,7 +4,7 @@ and all of the functionality contained
 within the map_window screen of our application
 """
 
-from os.path import join, dirname
+from os.path import join, dirname, abspath
 from itertools import takewhile
 from kivy.core.window import Window
 from kivy.uix.button import Button
@@ -55,8 +55,17 @@ class MapWindow(Screen):
         self._popup.open()
 
     def load(self, path, filename):
-        self.map_source = path
+        self.map_source = filename[0]
         self.dismiss_popup()
+        self.ids["map"].load_map_source(self.map_source)
+
+
+class LoadDialog(FloatLayout):
+    load = ObjectProperty(None)
+    cancel = ObjectProperty(None)
+
+
+Factory.register('LoadDialog', cls=LoadDialog)
 
 
 class DrawableMapView(Scatter):
@@ -67,9 +76,11 @@ class DrawableMapView(Scatter):
     lines = []
     first_position = None
     draw_mode = False
+    image_uploaded = False
 
     def __init__(self, **kwargs):
         self.do_rotation = False
+        self.do_translation = (False, False)
         super().__init__(**kwargs)
 
     def on_touch_down(self, touch):
@@ -77,7 +88,7 @@ class DrawableMapView(Scatter):
         When in draw_mode (TODO), make a line segment
         path based on current touch and last touch
         """
-        if self.draw_mode:
+        if self.draw_mode and self.image_uploaded:
             x = touch.x
             y = touch.y
             (abs_x, abs_y) = self.to_local(x, y)
@@ -121,8 +132,12 @@ class DrawableMapView(Scatter):
         """
         Removes the last drawn line
         """
-        if self.lines:
-            self.lines.pop()
+        with self.canvas:
+            if self.lines:
+                line = self.lines.pop()
+                self.canvas.remove(line)
+                if not self.lines:
+                    self.first_position = None
 
     def clear(self):
         """
@@ -130,10 +145,30 @@ class DrawableMapView(Scatter):
         """
         self.lines = []
         self.first_position = None
+        with self.canvas:
+            for child in self.canvas.children:
+                if type(child) == Line:
+                    self.canvas.remove(child)
+
+    def recenter(self):
+        """
+        """
+        self.scale = 1
+        self.x = 0
+        self.y = 0
 
     def collide_point(self, x, y):
         # print "collide_point", x, y
         return True
+
+    def load_map_source(self, map_source):
+        self.canvas.clear()
+        self.do_translation = (True, True)
+        self.image_uploaded = True
+        for child in self.parent.parent.children:
+            if type(child) == Label:
+                self.parent.parent.remove_widget(child)
+        self.add_widget(Image(source=map_source, size=self.size, pos=self.pos))
 
 
 class LoadDialog(FloatLayout):

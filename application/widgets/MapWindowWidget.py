@@ -31,6 +31,11 @@ Builder.load_string("""
                         Rectangle:
                             source: 'resources/images/tanzania_drone_pic2.jpg'
                             size: self.size
+            Label:
+                id: add_image_label
+                text: "Please add your own image"
+                font_size: 20
+                bold: True
                         # Image:
                         #     id: draw_image
                         #     source: "resources/images/marker.png"
@@ -85,6 +90,8 @@ Builder.load_string("""
                         Button:
                             text: "Insert Image"
                             size_hint: (1, 0.6)
+                            on_release: 
+                                root.show_load()
                     AnchorLayout:
                         Button:
                             text: "Undo"
@@ -101,9 +108,11 @@ Builder.load_string("""
                                 root.ids["map"].clear()
                     AnchorLayout:
                         Button:
-                            text: "Polygon"
+                            text: "Recenter"
                             size_hint: (1, 0.6)
                             padding_x: 10
+                            on_release:
+                                root.ids["map"].recenter()
                     AnchorLayout:
                         Button:
                             text: "Lasso"
