@@ -153,4 +153,51 @@ Builder.load_string("""
             Button:
                 text: "Load"
                 on_release: root.load(filechooser.path, filechooser.selection)
+
+<CoordinateDialog>:
+    GridLayout:
+        size: root.size
+        pos: root.pos
+        rows: 10
+        orientation: "vertical"
+        Label:
+            size_hint_y: 0.3
+            font_size: 14
+            halign: 'center'
+            text: "\\n\\nInput at least three GPS Coordinates into the fields. \\nFor example: Top Left Coordinate should take in the GPS value of the top left coordinate of the image.\\n"
+        Label:
+            id: tl_coord_label 
+            text: "Top Left Coordinate"
+            size_hint: (0.1, 0.7)          
+        TextInput:
+            id: tl_coord
+            size_hint: (0.1, 0.7)
+        Label:
+            id: tr_coord_label
+            text: "Top Right Coordinate"   
+            size_hint: (0.1, 0.7)   
+        TextInput:
+            id: tr_coord
+            size_hint: (0.1, 0.7)   
+        Label:
+            id: bl_coord_label
+            text: "Bottom Left Coordinate"
+            size_hint: (0.1, 0.7)   
+        TextInput:
+            id: bl_coord
+            size_hint: (0.1, 0.7)   
+        Label:
+            id: br_coord_label
+            text: "Bottom Right Coordinate"
+            size_hint: (0.1, 0.7)   
+        TextInput:
+            id: br_coord
+            size_hint: (0.1, 0.7)   
+        Button:
+            id: submit_coord
+            size_hint: (0.1, 0.7)   
+            text: "Submit"
+            on_release:
+                root.submit_coordinates()
+
 """)

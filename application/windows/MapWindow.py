@@ -32,6 +32,7 @@ from kivy.uix.scatter import Scatter
 from kivy.graphics import Color
 from kivy.graphics import Line
 import widgets.MapWindowWidget
+from Pixel_to_GPS import pixel_to_GPS
 
 
 class MapWindow(Screen):
@@ -57,7 +58,50 @@ class MapWindow(Screen):
     def load(self, path, filename):
         self.map_source = filename[0]
         self.dismiss_popup()
-        self.ids["map"].load_map_source(self.map_source)
+        self.coord_dialog = CoordinateDialog(
+            submit_coordinates=self.submit_coordinates, cancel=self.dismiss_popup)
+        self._popup = Popup(title="Input Coordinates", content=self.coord_dialog,
+                            size_hint=(0.9, 0.9))
+        self._popup.open()
+
+    def submit_coordinates(self):
+        try:
+            tl_coord = float(self.coord_dialog.ids["tl_coord"].text)
+        except:
+            tl_coord = None
+            label = self.coord_dialog.ids["tl_coord_label"]
+            label.text = label.text + " (Invalid)"
+            label.color = (1, 0, 0, 0.8)
+        try:
+            tr_coord = float(self.coord_dialog.ids["tr_coord"].text)
+        except:
+            tr_coord = None
+            label = self.coord_dialog.ids["tr_coord_label"]
+            label.text = label.text + " (Invalid)"
+            label.color = (1, 0, 0, 0.8)
+        try:
+            bl_coord = float(self.coord_dialog.ids["bl_coord"].text)
+        except:
+            bl_coord = None
+            label = self.coord_dialog.ids["bl_coord_label"]
+            label.text = label.text + " (Invalid)"
+            label.color = (1, 0, 0, 0.8)
+        try:
+            br_coord = float(self.coord_dialog.ids["br_coord"].text)
+        except:
+            br_coord = None
+            label = self.coord_dialog.ids["br_coord_label"]
+            label.text = label.text + " (Invalid)"
+            label.color = (1, 0, 0, 0.8)
+
+        coords = [tl_coord, tr_coord, bl_coord, br_coord]
+
+        if coords.count(None) > 1:
+            pass
+        else:
+            self.dismiss_popup()
+            self.ids["map"].load_map_source(
+                self.map_source, tl_coord, tr_coord, bl_coord, br_coord)
 
 
 class LoadDialog(FloatLayout):
@@ -65,7 +109,13 @@ class LoadDialog(FloatLayout):
     cancel = ObjectProperty(None)
 
 
+class CoordinateDialog(FloatLayout):
+    submit_coordinates = ObjectProperty(None)
+    cancel = ObjectProperty(None)
+
+
 Factory.register('LoadDialog', cls=LoadDialog)
+Factory.register('CoordinateDialog', cls=CoordinateDialog)
 
 
 class DrawableMapView(Scatter):
@@ -77,6 +127,7 @@ class DrawableMapView(Scatter):
     first_position = None
     draw_mode = False
     image_uploaded = False
+    pixel_to_GPS_map = None
 
     def __init__(self, **kwargs):
         self.do_rotation = False
@@ -161,7 +212,8 @@ class DrawableMapView(Scatter):
         # print "collide_point", x, y
         return True
 
-    def load_map_source(self, map_source):
+    def load_map_source(self, map_source, tl_coord, tr_coord, bl_coord, br_coord):
+        # Changing the canvas, visual stuff
         self.canvas.clear()
         self.do_translation = (True, True)
         self.image_uploaded = True
@@ -169,6 +221,9 @@ class DrawableMapView(Scatter):
             if type(child) == Label:
                 self.parent.parent.remove_widget(child)
         self.add_widget(Image(source=map_source, size=self.size, pos=self.pos))
+
+        # Creating our pixel to GPS map
+        # self.pixel_to_GPS_map = pixel_to_GPS()
 
 
 class LoadDialog(FloatLayout):
