@@ -15,11 +15,16 @@ Completed Tasks (include completed task and date)
     - Added line segment drawing in the mapview 
 **12/01/2020 (Tuesday) - Brady and Sunny
     - Added line segment draw mode, undo, clear, recenter, and image uplaod
-    
+**12/03/2020 (Thursday) - Brady and Sunny
+    - Added dialog to get corner GPS coords of images imported
 
 Technical Challenges/Roadblocks:
 - (insert here as specific as possible, including issue and relevant 
     lines of code)
 - Fix "Route Planning" background banner from getting darker when starting drawing, not sure why this is happening.
-
+- Image filetype validation
+- Testing Pixel_to_GPS 
+- Checking Pixel_to_GPS accepts inputs of all four corners, but only requries 3.
+- Indicate to user that they're in draw mode
+- Creating GPS coordinates to send and printing to file from line segments drawn 
 
