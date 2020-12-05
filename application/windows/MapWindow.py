@@ -80,8 +80,6 @@ class MapWindow(Screen):
         coords = [tl_coord, tr_coord, bl_coord, br_coord]
 
         if coords.count(None) > 1:
-            print("here")
-            print(coords)
             pass
         else:
             self.dismiss_popup()
