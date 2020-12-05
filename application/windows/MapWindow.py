@@ -65,35 +65,7 @@ class MapWindow(Screen):
         self._popup.open()
 
     def submit_coordinates(self):
-        try:
-            tl_coord = float(self.coord_dialog.ids["tl_coord"].text)
-        except:
-            tl_coord = None
-            label = self.coord_dialog.ids["tl_coord_label"]
-            label.text = label.text + " (Invalid)"
-            label.color = (1, 0, 0, 0.8)
-        try:
-            tr_coord = float(self.coord_dialog.ids["tr_coord"].text)
-        except:
-            tr_coord = None
-            label = self.coord_dialog.ids["tr_coord_label"]
-            label.text = label.text + " (Invalid)"
-            label.color = (1, 0, 0, 0.8)
-        try:
-            bl_coord = float(self.coord_dialog.ids["bl_coord"].text)
-        except:
-            bl_coord = None
-            label = self.coord_dialog.ids["bl_coord_label"]
-            label.text = label.text + " (Invalid)"
-            label.color = (1, 0, 0, 0.8)
-        try:
-            br_coord = float(self.coord_dialog.ids["br_coord"].text)
-        except:
-            br_coord = None
-            label = self.coord_dialog.ids["br_coord_label"]
-            label.text = label.text + " (Invalid)"
-            label.color = (1, 0, 0, 0.8)
-
+        (tl_coord, tr_coord, bl_coord, br_coord) = self.validate_coordinates()
         coords = [tl_coord, tr_coord, bl_coord, br_coord]
 
         if coords.count(None) > 1:
@@ -102,6 +74,30 @@ class MapWindow(Screen):
             self.dismiss_popup()
             self.ids["map"].load_map_source(
                 self.map_source, tl_coord, tr_coord, bl_coord, br_coord)
+
+    def validate_coordinates(self):
+        coord_ids = ["tl_coord", "tr_coord", "bl_coord", "br_coord"]
+        (tl_coord, tr_coord, bl_coord, br_coord) = (None, None, None, None)
+        coords = [tl_coord, tr_coord, bl_coord, br_coord]
+
+        for i in range(len(coord_ids)):
+            coords[i] = self.validate_coordinate(coord_ids[i])
+
+        return coords
+
+    def validate_coordinate(self, coord_id):
+        label_id = coord_id + "_label"
+        label = self.coord_dialog.ids[label_id]
+        try:
+            tl_coord = float(self.coord_dialog.ids[coord_id].text)
+            if "(Invalid)" in label.text:
+                label.text = label.text[:label.text.find(" (Invalid)")]
+            label.color = (1, 1, 1, 1)
+        except:
+            tl_coord = None
+            if "(Invalid)" not in label.text:
+                label.text = label.text + " (Invalid)"
+            label.color = (1, 0, 0, 0.8)
 
 
 class LoadDialog(FloatLayout):
