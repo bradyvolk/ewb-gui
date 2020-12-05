@@ -50,12 +50,19 @@ class MapWindow(Screen):
         self._popup.dismiss()
 
     def show_load(self):
+        """
+        Shows the pop up for the kivy file explorer
+        """
         content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
         self._popup = Popup(title="Load file", content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()
 
     def load(self, path, filename):
+        """
+        Loads file from file explorer in kivy when uploading image to 
+        be used for a map.
+        """
         self.map_source = filename[0]
         self.dismiss_popup()
         self.coord_dialog = CoordinateDialog(
@@ -65,6 +72,10 @@ class MapWindow(Screen):
         self._popup.open()
 
     def submit_coordinates(self):
+        """
+        Checks if user inputted at least 3 valid coordinates and send them to 
+        our DrawableMapView if so.
+        """
         (tl_coord, tr_coord, bl_coord, br_coord) = self.validate_coordinates()
         coords = [tl_coord, tr_coord, bl_coord, br_coord]
 
@@ -76,6 +87,9 @@ class MapWindow(Screen):
                 self.map_source, tl_coord, tr_coord, bl_coord, br_coord)
 
     def validate_coordinates(self):
+        """
+        Validates user-inputted coordinates
+        """
         coord_ids = ["tl_coord", "tr_coord", "bl_coord", "br_coord"]
         (tl_coord, tr_coord, bl_coord, br_coord) = (None, None, None, None)
         coords = [tl_coord, tr_coord, bl_coord, br_coord]
@@ -86,6 +100,11 @@ class MapWindow(Screen):
         return coords
 
     def validate_coordinate(self, coord_id):
+        """
+        Validates a given user-inputted coordinate. If the input is 
+        non-numeric, then the label is given an (Invalid) marker, and
+        the text changes to red to indicate to the user the invalid input.
+        """
         label_id = coord_id + "_label"
         label = self.coord_dialog.ids[label_id]
         try:
@@ -199,16 +218,18 @@ class DrawableMapView(Scatter):
 
     def recenter(self):
         """
+        Recenters and rescales the image
         """
         self.scale = 1
         self.x = 0
         self.y = 0
 
-    def collide_point(self, x, y):
-        # print "collide_point", x, y
-        return True
-
     def load_map_source(self, map_source, tl_coord, tr_coord, bl_coord, br_coord):
+        """
+        Changes the DrawableMapView to use the uploaded map_source image,
+        and uses the inputted coordinates to create a map from pixel to GPS
+        coordinates.
+        """
         # Changing the canvas, visual stuff
         self.canvas.clear()
         self.do_translation = (True, True)
