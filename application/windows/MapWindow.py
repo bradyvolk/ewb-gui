@@ -80,6 +80,8 @@ class MapWindow(Screen):
         coords = [tl_coord, tr_coord, bl_coord, br_coord]
 
         if coords.count(None) > 1:
+            print("here")
+            print(coords)
             pass
         else:
             self.dismiss_popup()
@@ -108,15 +110,16 @@ class MapWindow(Screen):
         label_id = coord_id + "_label"
         label = self.coord_dialog.ids[label_id]
         try:
-            tl_coord = float(self.coord_dialog.ids[coord_id].text)
+            coord = float(self.coord_dialog.ids[coord_id].text)
             if "(Invalid)" in label.text:
                 label.text = label.text[:label.text.find(" (Invalid)")]
             label.color = (1, 1, 1, 1)
         except:
-            tl_coord = None
+            coord = None
             if "(Invalid)" not in label.text:
                 label.text = label.text + " (Invalid)"
             label.color = (1, 0, 0, 0.8)
+        return coord
 
 
 class LoadDialog(FloatLayout):
