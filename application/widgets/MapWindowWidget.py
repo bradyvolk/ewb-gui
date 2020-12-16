@@ -133,6 +133,8 @@ Builder.load_string("""
                     Button:
                         text: "Run"
                         size_hint: (1, 1)
+                        on_release:
+                            root.ids["map"].computePath()
 
 <LoadDialog>:
     BoxLayout:
@@ -165,34 +167,90 @@ Builder.load_string("""
             font_size: 14
             halign: 'center'
             text: "\\n\\nInput at least three GPS Coordinates into the fields. \\nFor example: Top Left Coordinate should take in the GPS value of the top left coordinate of the image.\\n"
-        Label:
-            id: tl_coord_label 
-            text: "Top Left Coordinate"
-            size_hint: (0.1, 0.7)          
-        TextInput:
-            id: tl_coord
-            size_hint: (0.1, 0.7)
-        Label:
-            id: tr_coord_label
-            text: "Top Right Coordinate"   
-            size_hint: (0.1, 0.7)   
-        TextInput:
-            id: tr_coord
-            size_hint: (0.1, 0.7)   
-        Label:
-            id: bl_coord_label
-            text: "Bottom Left Coordinate"
-            size_hint: (0.1, 0.7)   
-        TextInput:
-            id: bl_coord
-            size_hint: (0.1, 0.7)   
-        Label:
-            id: br_coord_label
-            text: "Bottom Right Coordinate"
-            size_hint: (0.1, 0.7)   
-        TextInput:
-            id: br_coord
-            size_hint: (0.1, 0.7)   
+        BoxLayout:
+            orientation: "horizontal"
+
+            BoxLayout:
+                orientation: "vertical"
+                Label:
+                    id: tl_coord_lat_label
+                    text: "Top Left Coordinate Latitude"
+                
+                TextInput:
+                    id: tl_coord_lat
+              
+            BoxLayout:
+                orientation: "vertical"
+                Label:
+                    id: tl_coord_lon_label
+                    text: "Top Left Coordinate Longitude"
+                TextInput:
+                    id: tl_coord_lon
+
+
+        BoxLayout:
+            orientation: "horizontal"
+
+            BoxLayout:
+                orientation: "vertical"
+                Label:
+                    id: tr_coord_lat_label
+                    text: "Top Right Coordinate Latitude"
+                
+                TextInput:
+                    id: tr_coord_lat
+              
+            BoxLayout:
+                orientation: "vertical"
+                Label:
+                    id: tr_coord_lon_label
+                    text: "Top Right Coordinate Longitude"
+                TextInput:
+                    id: tr_coord_lon
+
+        
+        BoxLayout:
+            orientation: "horizontal"
+
+            BoxLayout:
+                orientation: "vertical"
+                Label:
+                    id: bl_coord_lat_label
+                    text: "Bottom Left Coordinate Latitude"
+                
+                TextInput:
+                    id: bl_coord_lat
+              
+            BoxLayout:
+                orientation: "vertical"
+                Label:
+                    id: bl_coord_lon_label
+                    text: "Bottom Left Coordinate Longitude"
+                TextInput:
+                    id: bl_coord_lon
+
+
+        BoxLayout:
+            orientation: "horizontal"
+
+            BoxLayout:
+                orientation: "vertical"
+                Label:
+                    id: br_coord_lat_label
+                    text: "Bottom Right Coordinate Latitude"
+                
+                TextInput:
+                    id: br_coord_lat
+              
+            BoxLayout:
+                orientation: "vertical"
+                Label:
+                    id: br_coord_lon_label
+                    text: "Bottom Right Coordinate Longitude"
+                TextInput:
+                    id: br_coord_lon
+
+                
         Button:
             id: submit_coord
             size_hint: (0.1, 0.7)   

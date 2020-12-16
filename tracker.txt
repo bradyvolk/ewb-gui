@@ -17,6 +17,8 @@ Completed Tasks (include completed task and date)
     - Added line segment draw mode, undo, clear, recenter, and image uplaod
 **12/03/2020 (Thursday) - Brady and Sunny
     - Added dialog to get corner GPS coords of images imported
+**12/16/2020 (Wednesday) - Jason and Brady
+    - Separated Coordinates into tuples for user input, started creating the method to compute path
 
 Technical Challenges/Roadblocks:
 - (insert here as specific as possible, including issue and relevant 
@@ -27,4 +29,5 @@ Technical Challenges/Roadblocks:
 - Checking Pixel_to_GPS accepts inputs of all four corners, but only requries 3.
 - Indicate to user that they're in draw mode
 - Creating GPS coordinates to send and printing to file from line segments drawn 
+- Given a distance between coordinates, figuring out what to add between each point
 

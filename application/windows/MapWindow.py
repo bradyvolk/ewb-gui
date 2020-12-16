@@ -32,7 +32,7 @@ from kivy.uix.scatter import Scatter
 from kivy.graphics import Color
 from kivy.graphics import Line
 import widgets.MapWindowWidget
-from Pixel_to_GPS import pixel_to_GPS
+from Pixel_to_GPS import pixel_to_GPS, read_image
 
 
 class MapWindow(Screen):
@@ -76,23 +76,35 @@ class MapWindow(Screen):
         Checks if user inputted at least 3 valid coordinates and send them to 
         our DrawableMapView if so.
         """
-        (tl_coord, tr_coord, bl_coord, br_coord) = self.validate_coordinates()
-        coords = [tl_coord, tr_coord, bl_coord, br_coord]
+        (tl_coord_lat, tl_coord_lon, tr_coord_lat, tr_coord_lon, bl_coord_lat,
+         bl_coord_lon, br_coord_lat, br_coord_lon) = self.validate_coordinates()
 
-        if coords.count(None) > 1:
+        coords = [(tl_coord_lat, tl_coord_lon), (tr_coord_lat, tr_coord_lon),
+                  (bl_coord_lat, bl_coord_lon), (br_coord_lat, br_coord_lon)]
+
+        invalidpairs = 0
+
+        for (lat, lon) in coords:
+            if lat == None or lon == None:
+                invalidpairs += 1
+
+        if invalidpairs > 1:
             pass
         else:
             self.dismiss_popup()
             self.ids["map"].load_map_source(
-                self.map_source, tl_coord, tr_coord, bl_coord, br_coord)
+                self.map_source, coords)
 
     def validate_coordinates(self):
         """
         Validates user-inputted coordinates
         """
-        coord_ids = ["tl_coord", "tr_coord", "bl_coord", "br_coord"]
-        (tl_coord, tr_coord, bl_coord, br_coord) = (None, None, None, None)
-        coords = [tl_coord, tr_coord, bl_coord, br_coord]
+        coord_ids = ["tl_coord_lat", "tl_coord_lon", "tr_coord_lat", "tr_coord_lon",
+                     "bl_coord_lat", "bl_coord_lon", "br_coord_lat", "br_coord_lon"]
+        (tl_coord_lat, tl_coord_lon, tr_coord_lat, tr_coord_lon, bl_coord_lat,
+         bl_coord_lon, br_coord_lat, br_coord_lon) = (None, None, None, None, None, None, None, None)
+        coords = [tl_coord_lat, tl_coord_lon, tr_coord_lat, tr_coord_lon, bl_coord_lat,
+                  bl_coord_lon, br_coord_lat, br_coord_lon]
 
         for i in range(len(coord_ids)):
             coords[i] = self.validate_coordinate(coord_ids[i])
@@ -144,6 +156,7 @@ class DrawableMapView(Scatter):
     draw_mode = False
     image_uploaded = False
     pixel_to_GPS_map = None
+    distance_between_coordinates = .0005
 
     def __init__(self, **kwargs):
         self.do_rotation = False
@@ -225,7 +238,7 @@ class DrawableMapView(Scatter):
         self.x = 0
         self.y = 0
 
-    def load_map_source(self, map_source, tl_coord, tr_coord, bl_coord, br_coord):
+    def load_map_source(self, map_source, coords):
         """
         Changes the DrawableMapView to use the uploaded map_source image,
         and uses the inputted coordinates to create a map from pixel to GPS
@@ -241,7 +254,38 @@ class DrawableMapView(Scatter):
         self.add_widget(Image(source=map_source, size=self.size, pos=self.pos))
 
         # Creating our pixel to GPS map
-        # self.pixel_to_GPS_map = pixel_to_GPS()
+        img = read_image(map_source)
+        H, W, _ = img.shape
+        self.pixel_to_GPS_map = pixel_to_GPS(
+            img, H, W, coords[0], coords[1], coords[2])
+        print(self.pixel_to_GPS_map)
+
+    def computePath(self):
+        line_endpoints = []
+
+        for line in self.lines:
+            line_endpoints.append(
+                (line.points[0], line.points[len(line.points)-1]))
+
+        GPS_line_endpoints = []
+
+        for ((start_x, start_y), (end_x, end_y)) in line_endpoints:
+            GPS_line_endpoints.append(
+                (self.pixel_to_GPS_map[start_x][start_y], self.pixel_to_GPS_map[end_x][end_y]))
+
+        for ((start_lat, start_lon), (end_lat, end_lon)) in GPS_line_endpoints:
+
+            if end_lat > start_lat and end_lon > start_lon:  # add to both
+                pass
+
+            elif end_lat <= start_lat and end_lon <= start_lon:  # subtract to both
+                pass
+
+            elif end_lat > start_lat and end_lon <= start_lon:  # add to lat, subtract to lon
+                pass
+
+            elif end_lat <= start_lat and end_lon > start_lon:  # subtract to lat, add to lon
+                pass
 
 
 class LoadDialog(FloatLayout):
