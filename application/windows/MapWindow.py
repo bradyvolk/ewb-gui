@@ -60,7 +60,7 @@ class MapWindow(Screen):
 
     def load(self, path, filename):
         """
-        Loads file from file explorer in kivy when uploading image to 
+        Loads file from file explorer in kivy when uploading image to
         be used for a map.
         """
         self.map_source = filename[0]
@@ -73,7 +73,7 @@ class MapWindow(Screen):
 
     def submit_coordinates(self):
         """
-        Checks if user inputted at least 3 valid coordinates and send them to 
+        Checks if user inputted at least 3 valid coordinates and send them to
         our DrawableMapView if so.
         """
         (tl_coord_lat, tl_coord_lon, tr_coord_lat, tr_coord_lon, bl_coord_lat,
@@ -113,7 +113,7 @@ class MapWindow(Screen):
 
     def validate_coordinate(self, coord_id):
         """
-        Validates a given user-inputted coordinate. If the input is 
+        Validates a given user-inputted coordinate. If the input is
         non-numeric, then the label is given an (Invalid) marker, and
         the text changes to red to indicate to the user the invalid input.
         """
@@ -156,12 +156,18 @@ class DrawableMapView(Scatter):
     draw_mode = False
     image_uploaded = False
     pixel_to_GPS_map = None
-    distance_between_coordinates = .0005
+
+    # (approximately 1.1 meters)
+    distance_between_path_points_in_meters = 0.00001
 
     def __init__(self, **kwargs):
         self.do_rotation = False
         self.do_translation = (False, False)
         super().__init__(**kwargs)
+
+    def set_distance_between_path_points_in_meters(self, val):
+        assert type(val) == (float or int)
+        self.distance_between_path_points_in_meters = val
 
     def on_touch_down(self, touch):
         """
@@ -256,36 +262,75 @@ class DrawableMapView(Scatter):
         # Creating our pixel to GPS map
         img = read_image(map_source)
         H, W, _ = img.shape
+
         self.pixel_to_GPS_map = pixel_to_GPS(
             img, H, W, coords[0], coords[1], coords[2])
-        print(self.pixel_to_GPS_map)
 
-    def computePath(self):
-        line_endpoints = []
+    def compute_path(self):
+        """
+        Using the pixel_to_GPS_map and endpoints of the lines, computes a path
+        and returns it as a nested array.
+        """
+        path_in_gps_coordinates = []
+
+        line_endpoints = []  # array of tuples of path end_points as pixel values relative
 
         for line in self.lines:
-            line_endpoints.append(
-                (line.points[0], line.points[len(line.points)-1]))
+            start = (line.points[0], line.points[1])
+            end = (line.points[len(line.points)-2],
+                   line.points[len(line.points)-1])
+            line_endpoints.append((start, end))
 
         GPS_line_endpoints = []
 
         for ((start_x, start_y), (end_x, end_y)) in line_endpoints:
             GPS_line_endpoints.append(
-                (self.pixel_to_GPS_map[start_x][start_y], self.pixel_to_GPS_map[end_x][end_y]))
+                (self.pixel_to_GPS_map[int(start_x)][int(start_y)], self.pixel_to_GPS_map[int(end_x)][int(end_y)]))
 
         for ((start_lat, start_lon), (end_lat, end_lon)) in GPS_line_endpoints:
+            dist_y = end_lat - start_lat
+            dist_x = end_lon - start_lon
 
-            if end_lat > start_lat and end_lon > start_lon:  # add to both
-                pass
+            if dist_x == 0.0 and dist_y == 0.0:
+                alpha = 0
+            else:
+                alpha = (self.distance_between_path_points_in_meters /
+                         dist_x**2 + dist_y**2)
 
-            elif end_lat <= start_lat and end_lon <= start_lon:  # subtract to both
-                pass
+            step_x = alpha * dist_x
+            step_y = alpha * dist_y
 
-            elif end_lat > start_lat and end_lon <= start_lon:  # add to lat, subtract to lon
-                pass
+            current_x = start_lon
+            current_y = start_lat
 
-            elif end_lat <= start_lat and end_lon > start_lon:  # subtract to lat, add to lon
-                pass
+            step_condition = (abs(end_lat - current_y) <
+                              step_y) or (abs(end_lon - current_x) < step_x)
+
+            while step_condition:
+                path_in_gps_coordinates.append((current_x, current_y))
+
+        print("")
+        print(path_in_gps_coordinates)
+        return path_in_gps_coordinates
+
+        # elif end_lat <= start_lat and end_lon <= start_lon:  # subtract to both
+        #     pass
+
+        # elif end_lat > start_lat and end_lon <= start_lon:  # add to lat, subtract to lon
+        #     pass
+
+        # elif end_lat <= start_lat and end_lon > start_lon:  # subtract to lat, add to lon
+        #     pass
+
+    def run(self):
+        """
+        Computes the path and saves it to a text file
+        """
+        path = self.compute_path()
+        path_file = open("..\\path.txt", "w+")
+        for coord in path:
+            path_file.write(coord)
+        path_file.close()
 
 
 class LoadDialog(FloatLayout):

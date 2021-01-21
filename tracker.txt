@@ -19,6 +19,11 @@ Completed Tasks (include completed task and date)
     - Added dialog to get corner GPS coords of images imported
 **12/16/2020 (Wednesday) - Jason and Brady
     - Separated Coordinates into tuples for user input, started creating the method to compute path
+**1/21/2020 (Thursday) - Brady
+    - Finished compute path function, but still has some bugs that prevent it from writing to text file.
+    need to figure out why the coordinates for line segments can be out of bounds of the 
+    pixel_to_GPS array. The line segments pixel values must not correspond to the same as the pixel
+    values on the original image, maybe there is some hidden scaling.
 
 Technical Challenges/Roadblocks:
 - (insert here as specific as possible, including issue and relevant 
@@ -30,4 +35,5 @@ Technical Challenges/Roadblocks:
 - Indicate to user that they're in draw mode
 - Creating GPS coordinates to send and printing to file from line segments drawn 
 - Given a distance between coordinates, figuring out what to add between each point
+- **Figure out why image coordinates of line segments are out of bounds of the original image size**
 

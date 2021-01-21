@@ -134,7 +134,7 @@ Builder.load_string("""
                         text: "Run"
                         size_hint: (1, 1)
                         on_release:
-                            root.ids["map"].computePath()
+                            root.ids["map"].run()
 
 <LoadDialog>:
     BoxLayout:
