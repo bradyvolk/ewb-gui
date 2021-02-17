@@ -178,6 +178,7 @@ class DrawableMapView(Scatter):
             x = touch.x
             y = touch.y
             (abs_x, abs_y) = self.to_local(x, y)
+            print("local coord of touch", abs_x, abs_y)
             with self.canvas:
                 Color(0, 0, 0, 1, mode='rgba')  # black
                 # Three cases:
@@ -241,8 +242,8 @@ class DrawableMapView(Scatter):
         Recenters and rescales the image
         """
         self.scale = 1
-        self.x = 0
-        self.y = 0
+        self.x = Window.size[0] / 2
+        self.y = Window.size[1] / 2
 
     def load_map_source(self, map_source, coords):
         """
@@ -257,11 +258,14 @@ class DrawableMapView(Scatter):
         for child in self.parent.parent.children:
             if type(child) == Label:
                 self.parent.parent.remove_widget(child)
-        self.add_widget(Image(source=map_source, size=self.size, pos=self.pos))
-
-        # Creating our pixel to GPS map
+        self.recenter()
+        with self.canvas:
+            Image(source=map_source, size=self.size, pos=(0, 0))
         img = read_image(map_source)
         H, W, _ = img.shape
+
+        # Creating our pixel to GPS map
+        print("image shape in MapWindow", img.shape)
 
         self.pixel_to_GPS_map = pixel_to_GPS(
             img, H, W, coords[0], coords[1], coords[2])
@@ -309,8 +313,8 @@ class DrawableMapView(Scatter):
             while step_condition:
                 path_in_gps_coordinates.append((current_x, current_y))
 
-        print("")
-        print(path_in_gps_coordinates)
+        # print("")
+        # print(path_in_gps_coordinates)
         return path_in_gps_coordinates
 
         # elif end_lat <= start_lat and end_lon <= start_lon:  # subtract to both

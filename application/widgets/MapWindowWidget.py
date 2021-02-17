@@ -25,7 +25,7 @@ Builder.load_string("""
                 id: map_container
                 orientation: "horizontal"
                 DrawableMapView:
-                    pos_hint: {'top': 1, 'bottom': 1}
+                    # pos_hint: {'top': 1, 'bottom': 1}
                     id: map
                     canvas:
                         Rectangle:

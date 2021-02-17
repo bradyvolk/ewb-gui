@@ -6,6 +6,7 @@ def read_image(image_path):
     """Reads an image as a numpy array given the path/directory as an arugment."""
     x = np.array(Image.open(image_path), dtype='uint8')
     shape = x.shape
+    print(shape)
     H = shape[0]
     W = shape[1]
     image = np.zeros((H, W, 3), dtype='uint8')
