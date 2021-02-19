@@ -26,8 +26,8 @@ Builder.load_string("""
             rows: 1
             Button:
                 text: "Previous"
-                on_release: root.goBack()
+                on_release: root.to_previous_instruction()
             Button:
                 text: "Next"
-                on_release: root.updateInstructions()
+                on_release: root.to_next_instruction()
 """)
