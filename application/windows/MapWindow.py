@@ -259,6 +259,7 @@ class DrawableMapView(Scatter):
             if type(child) == Label:
                 self.parent.parent.remove_widget(child)
         self.recenter()
+        print(self.bbox)
         with self.canvas:
             Image(source=map_source, size=self.size, pos=(0, 0))
         img = read_image(map_source)
