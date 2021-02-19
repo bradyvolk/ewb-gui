@@ -242,8 +242,8 @@ class DrawableMapView(Scatter):
         Recenters and rescales the image
         """
         self.scale = 1
-        self.x = Window.size[0] / 2
-        self.y = Window.size[1] / 2
+        self.x = ((Window.size[0] / 2) - (self.source_W / 2))
+        self.y = ((Window.size[1] / 2) - (self.source_H / 2))
 
     def load_map_source(self, map_source, coords):
         """
@@ -258,18 +258,19 @@ class DrawableMapView(Scatter):
         for child in self.parent.parent.children:
             if type(child) == Label:
                 self.parent.parent.remove_widget(child)
-        self.recenter()
         print(self.bbox)
+        self.source_img = read_image(map_source)
+        self.source_H, self.source_W, _ = self.source_img.shape
+        self.recenter()
         with self.canvas:
-            Image(source=map_source, size=self.size, pos=(0, 0))
-        img = read_image(map_source)
-        H, W, _ = img.shape
+            Image(source=map_source, size=self.size,
+                  pos=self.to_local(0, 0))
 
         # Creating our pixel to GPS map
-        print("image shape in MapWindow", img.shape)
+        print("image shape in MapWindow", self.source_img.shape)
 
         self.pixel_to_GPS_map = pixel_to_GPS(
-            img, H, W, coords[0], coords[1], coords[2])
+            self.source_img, self.source_H, self.source_W, coords[0], coords[1], coords[2])
 
     def compute_path(self):
         """
