@@ -32,9 +32,9 @@ def pixel_to_GPS(image, H, W, bl, tl, br):
         image : image that we will convert pixel coordinate to GPS coordinate
         H: height of the image
         W: width of the image
-        bl: GPS coordinate of the top left corner of the image
-        tl: GPS coordinate of the top right corner of the image
-        br: GPS coordinate of the bottom left corner of the image
+        bl: GPS coordinate of the bottom left corner of the image
+        tl: GPS coordinate of the top left corner of the image
+        br: GPS coordinate of the bottom right corner of the image
 
     OUTPUTS:
         GPS_coords: 2D Array representing the GPS coordinate at a certain pixel

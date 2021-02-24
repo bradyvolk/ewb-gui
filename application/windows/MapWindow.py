@@ -76,11 +76,11 @@ class MapWindow(Screen):
         Checks if user inputted at least 3 valid coordinates and send them to
         our DrawableMapView if so.
         """
-        (tl_coord_lat, tl_coord_lon, tr_coord_lat, tr_coord_lon, bl_coord_lat,
-         bl_coord_lon, br_coord_lat, br_coord_lon) = self.validate_coordinates()
+        (bl_coord_lat, bl_coord_lon, tl_coord_lat, tl_coord_lon, br_coord_lat,
+         br_coord_lon, tr_coord_lat, tr_coord_lon) = self.validate_coordinates()
 
-        coords = [(tl_coord_lat, tl_coord_lon), (tr_coord_lat, tr_coord_lon),
-                  (bl_coord_lat, bl_coord_lon), (br_coord_lat, br_coord_lon)]
+        coords = [(bl_coord_lat, bl_coord_lon), (tl_coord_lat, tl_coord_lon),
+                  (br_coord_lat, br_coord_lon), (tr_coord_lat, tr_coord_lon)]
 
         invalidpairs = 0
 
@@ -99,12 +99,12 @@ class MapWindow(Screen):
         """
         Validates user-inputted coordinates
         """
-        coord_ids = ["tl_coord_lat", "tl_coord_lon", "tr_coord_lat", "tr_coord_lon",
-                     "bl_coord_lat", "bl_coord_lon", "br_coord_lat", "br_coord_lon"]
-        (tl_coord_lat, tl_coord_lon, tr_coord_lat, tr_coord_lon, bl_coord_lat,
-         bl_coord_lon, br_coord_lat, br_coord_lon) = (None, None, None, None, None, None, None, None)
-        coords = [tl_coord_lat, tl_coord_lon, tr_coord_lat, tr_coord_lon, bl_coord_lat,
-                  bl_coord_lon, br_coord_lat, br_coord_lon]
+        coord_ids = ["bl_coord_lat", "bl_coord_lon", "tl_coord_lat", "tl_coord_lon",
+                     "br_coord_lat", "br_coord_lon", "tr_coord_lat", "tr_coord_lon"]
+        (bl_coord_lat, bl_coord_lon, tl_coord_lat, tl_coord_lon, br_coord_lat,
+         br_coord_lon, tr_coord_lat, tr_coord_lon) = (None, None, None, None, None, None, None, None)
+        coords = [bl_coord_lat, bl_coord_lon, tl_coord_lat, tl_coord_lon, br_coord_lat,
+                  br_coord_lon, tr_coord_lat, tr_coord_lon]
 
         for i in range(len(coord_ids)):
             coords[i] = self.validate_coordinate(coord_ids[i])
@@ -258,7 +258,6 @@ class DrawableMapView(Scatter):
         for child in self.parent.parent.children:
             if type(child) == Label:
                 self.parent.parent.remove_widget(child)
-        print(self.bbox)
         self.source_img = read_image(map_source)
         self.source_H, self.source_W, _ = self.source_img.shape
         self.recenter()
@@ -269,6 +268,7 @@ class DrawableMapView(Scatter):
         # Creating our pixel to GPS map
         print("image shape in MapWindow", self.source_img.shape)
 
+        print(coords[0], coords[1], coords[2])
         self.pixel_to_GPS_map = pixel_to_GPS(
             self.source_img, self.source_H, self.source_W, coords[0], coords[1], coords[2])
 
@@ -290,9 +290,15 @@ class DrawableMapView(Scatter):
         GPS_line_endpoints = []
 
         for ((start_x, start_y), (end_x, end_y)) in line_endpoints:
+            print((self.pixel_to_GPS_map[int(start_x)][int(
+                start_y)], self.pixel_to_GPS_map[int(end_x)][int(end_y)]))
             GPS_line_endpoints.append(
                 (self.pixel_to_GPS_map[int(start_x)][int(start_y)], self.pixel_to_GPS_map[int(end_x)][int(end_y)]))
 
+        print("")
+        print(GPS_line_endpoints)
+
+        # Filling in points between endpoints for path
         for ((start_lat, start_lon), (end_lat, end_lon)) in GPS_line_endpoints:
             dist_y = end_lat - start_lat
             dist_x = end_lon - start_lon
@@ -315,18 +321,9 @@ class DrawableMapView(Scatter):
             while step_condition:
                 path_in_gps_coordinates.append((current_x, current_y))
 
-        # print("")
-        # print(path_in_gps_coordinates)
+        print(self.pixel_to_GPS_map)
+        print(path_in_gps_coordinates)
         return path_in_gps_coordinates
-
-        # elif end_lat <= start_lat and end_lon <= start_lon:  # subtract to both
-        #     pass
-
-        # elif end_lat > start_lat and end_lon <= start_lon:  # add to lat, subtract to lon
-        #     pass
-
-        # elif end_lat <= start_lat and end_lon > start_lon:  # subtract to lat, add to lon
-        #     pass
 
     def run(self):
         """
