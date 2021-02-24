@@ -18,12 +18,18 @@ class InstructionsWindow(Screen):
 
     "Instructions Window"
 
-    def goBack(self):
+    def to_previous_instruction(self):
+        """
+        Button method that causes screen to go back to previous instruction window
+        """
         if self.index > 0:
             self.index -= 1
         self.current_instruction = self.instructions[self.index]
 
-    def updateInstructions(self):
+    def to_next_instruction(self):
+        """
+        Button method that causes screen to go to next instruction
+        """
         if self.index < (len(self.instructions)-1):
             self.index += 1
         self.current_instruction = self.instructions[self.index]

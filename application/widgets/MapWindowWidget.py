@@ -21,16 +21,13 @@ Builder.load_string("""
         # Main Box that contains Map
         FloatLayout:
             pos: (100, 100)
-            BoxLayout:
-                id: map_container
-                orientation: "horizontal"
-                DrawableMapView:
-                    # pos_hint: {'top': 1, 'bottom': 1}
-                    id: map
-                    canvas:
-                        Rectangle:
-                            source: 'resources/images/tanzania_drone_pic2.jpg'
-                            size: self.size
+            DrawableMapView:
+                # pos_hint: {'top': 1, 'bottom': 1}
+                id: map
+                canvas:
+                    Rectangle:
+                        source: 'resources/images/tanzania_drone_pic2.jpg'
+                        size: self.size
             Label:
                 id: add_image_label
                 text: "Please add your own image"
