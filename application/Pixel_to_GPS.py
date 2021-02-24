@@ -21,7 +21,7 @@ def read_image(image_path):
     return image
 
 
-def pixel_to_GPS(image, H, W, tl, tr, bl):
+def pixel_to_GPS(image, H, W, bl, tl, br):
     """
     pixel_to_GPS allows us to convert from pixel coordinates to GPS coordinates 
     of every pixel in the image with only the GPS coordinates of the top left pixel,
@@ -32,9 +32,9 @@ def pixel_to_GPS(image, H, W, tl, tr, bl):
         image : image that we will convert pixel coordinate to GPS coordinate
         H: height of the image
         W: width of the image
-        tl: GPS coordinate of the top left corner of the image
-        tr: GPS coordinate of the top right corner of the image
-        bl: GPS coordinate of the bottom left corner of the image
+        bl: GPS coordinate of the top left corner of the image
+        tl: GPS coordinate of the top right corner of the image
+        br: GPS coordinate of the bottom left corner of the image
 
     OUTPUTS:
         GPS_coords: 2D Array representing the GPS coordinate at a certain pixel
@@ -44,31 +44,31 @@ def pixel_to_GPS(image, H, W, tl, tr, bl):
 
     """
     GPS_coords = np.zeros((H, W), dtype='f,f')
-    GPS_coords[0][0] = tl
-    GPS_coords[0][W-1] = tr
-    GPS_coords[H-1][0] = bl
-    GPS_coords = fill_array(GPS_coords, H, W, tl, tr, bl)
+    GPS_coords[0][0] = bl
+    GPS_coords[0][W-1] = tl
+    GPS_coords[H-1][0] = br
+    GPS_coords = fill_array(GPS_coords, H, W, bl, tl, br)
     return GPS_coords
 
 
-def fill_array(GPS_coords, H, W, tl, tr, bl):
+def fill_array(GPS_coords, H, W, bl, tl, br):
     """
     HELPER METHOD for pixel_to_GPS.
 
     """
-    bl_x, bl_y = bl
-    tr_x, tr_y = tr
+    bl_x, bl_y = br
     tl_x, tl_y = tl
+    tl_x, tl_y = bl
 
-    slope1x = (float)(tr_x - tl_x) / W  # How much to increment x by for line 1
+    slope1x = (float)(tl_x - tl_x) / W  # How much to increment x by for line 1
 
     # How much to incrememnt y by for line 2
     slope2y = (float)(bl_y - tl_y) / H
 
-    if (tr_x - tl_x == 0):
+    if (tl_x - tl_x == 0):
         slope1 = 0.0
     else:
-        slope1 = (float)(tr_y-tl_y) / (tr_x - tl_x)  # Slope of Line 1
+        slope1 = (float)(tl_y-tl_y) / (tl_x - tl_x)  # Slope of Line 1
     if (bl_y - tl_y == 0):
         slope2 = 0.0
     else:
@@ -82,7 +82,7 @@ def fill_array(GPS_coords, H, W, tl, tr, bl):
     for j in range(H-1):  # Fill in the left and right edges
         y_scaled = slope2y*j
         GPS_coords[j][0] = (y_scaled*slope2, y_scaled)
-        GPS_coords[j][W-1] = (tr_x + (y_scaled*slope2), tr_y + y_scaled)
+        GPS_coords[j][W-1] = (tl_x + (y_scaled*slope2), tl_y + y_scaled)
 
     for z in range(H-1):  # Fill in everything in between
         x, y = GPS_coords[z][0]
@@ -95,7 +95,7 @@ def fill_array(GPS_coords, H, W, tl, tr, bl):
 
 if __name__ == "__main__":
 
-    img = read_image("resources/images/test.png")
+    img = read_image("resources/images/ghana.jpg")
     W, H, _ = img.shape
     gps = pixel_to_GPS(img, H, W, (0.0, 0.0), (W, 0.0), (0.0, H))
     print(gps[5][0])
