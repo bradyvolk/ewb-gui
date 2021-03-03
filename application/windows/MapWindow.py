@@ -33,6 +33,7 @@ from kivy.graphics import Color
 from kivy.graphics import Line
 import widgets.MapWindowWidget
 from Pixel_to_GPS import pixel_to_GPS, read_image
+from math import sqrt
 
 
 class MapWindow(Screen):
@@ -158,7 +159,7 @@ class DrawableMapView(Scatter):
     pixel_to_GPS_map = None
 
     # (approximately 1.1 meters)
-    distance_between_path_points_in_meters = 0.00001
+    distance_between_path_points_in_meters = 0.1
 
     def __init__(self, **kwargs):
         self.do_rotation = False
@@ -178,7 +179,6 @@ class DrawableMapView(Scatter):
             x = touch.x
             y = touch.y
             (abs_x, abs_y) = self.to_local(x, y)
-            print("local coord of touch", abs_x, abs_y)
             with self.canvas:
                 Color(0, 0, 0, 1, mode='rgba')  # black
                 # Three cases:
@@ -266,9 +266,6 @@ class DrawableMapView(Scatter):
                   pos=self.to_local(0, 0))
 
         # Creating our pixel to GPS map
-        print("image shape in MapWindow", self.source_img.shape)
-
-        print(coords[0], coords[1], coords[2])
         self.pixel_to_GPS_map = pixel_to_GPS(
             self.source_img, self.source_H, self.source_W, coords[0], coords[1], coords[2])
 
@@ -296,7 +293,8 @@ class DrawableMapView(Scatter):
                 (self.pixel_to_GPS_map[int(start_x)][int(start_y)], self.pixel_to_GPS_map[int(end_x)][int(end_y)]))
 
         print("")
-        print(GPS_line_endpoints)
+        print("GPS_line_endpoitns: ", GPS_line_endpoints)
+        print("")
 
         # Filling in points between endpoints for path
         for ((start_lat, start_lon), (end_lat, end_lon)) in GPS_line_endpoints:
@@ -307,7 +305,7 @@ class DrawableMapView(Scatter):
                 alpha = 0
             else:
                 alpha = (self.distance_between_path_points_in_meters /
-                         dist_x**2 + dist_y**2)
+                         sqrt(dist_x**2 + dist_y**2))
 
             step_x = alpha * dist_x
             step_y = alpha * dist_y
@@ -315,13 +313,29 @@ class DrawableMapView(Scatter):
             current_x = start_lon
             current_y = start_lat
 
-            step_condition = (abs(end_lat - current_y) <
-                              step_y) or (abs(end_lon - current_x) < step_x)
+            print("Step_x", step_x)
+            print("Step_y", step_y)
+            print("current_x", current_x)
+            print("current_y", current_y)
+            print("end_lat", end_lat)
+            print("end_lon", end_lon)
+            print(abs(end_lat - current_y))
+
+            step_condition = (abs(end_lat - current_y) >
+                              step_y) or (abs(end_lon - current_x) > step_x)
+
+            print("Step condition: ", step_condition)
 
             while step_condition:
+                # print("Step condition: ", step_condition)
+                # print("Step_x", step_x)
+                # print("Step_y", step_y)
                 path_in_gps_coordinates.append((current_x, current_y))
+                current_x += step_x
+                current_y += step_y
+                step_condition = (abs(end_lat - current_y) >
+                                  step_y) or (abs(end_lon - current_x) > step_x)
 
-        print(self.pixel_to_GPS_map)
         print(path_in_gps_coordinates)
         return path_in_gps_coordinates
 
