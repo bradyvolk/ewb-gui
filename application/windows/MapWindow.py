@@ -267,7 +267,7 @@ class DrawableMapView(Scatter):
 
         # Creating our pixel to GPS map
         self.pixel_to_GPS_map = pixel_to_GPS(
-            self.source_img, self.source_H, self.source_W, coords[0], coords[1], coords[2])
+            self.source_img, self.source_H, self.source_W, coords[0], coords[1], coords[2])  # TODO
 
     def compute_path(self):
         """
@@ -297,6 +297,7 @@ class DrawableMapView(Scatter):
         print("")
 
         # Filling in points between endpoints for path
+        # TODO (unpack tuple differently)
         for ((start_lat, start_lon), (end_lat, end_lon)) in GPS_line_endpoints:
             dist_y = end_lat - start_lat
             dist_x = end_lon - start_lon
@@ -322,7 +323,7 @@ class DrawableMapView(Scatter):
             print(abs(end_lat - current_y))
 
             step_condition = (abs(end_lat - current_y) >
-                              step_y) or (abs(end_lon - current_x) > step_x)
+                              abs(step_y)) or (abs(end_lon - current_x) > abs(step_x))
 
             print("Step condition: ", step_condition)
 
@@ -334,7 +335,7 @@ class DrawableMapView(Scatter):
                 current_x += step_x
                 current_y += step_y
                 step_condition = (abs(end_lat - current_y) >
-                                  step_y) or (abs(end_lon - current_x) > step_x)
+                                  abs(step_y)) or (abs(end_lon - current_x) > abs(step_x))
 
         print(path_in_gps_coordinates)
         return path_in_gps_coordinates
@@ -346,7 +347,7 @@ class DrawableMapView(Scatter):
         path = self.compute_path()
         path_file = open("..\\path.txt", "w+")
         for coord in path:
-            path_file.write(coord)
+            path_file.write(str(coord))
         path_file.close()
 
 
