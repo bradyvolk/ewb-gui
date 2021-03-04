@@ -347,7 +347,7 @@ class DrawableMapView(Scatter):
         path = self.compute_path()
         path_file = open("..\\path.txt", "w+")
         for coord in path:
-            path_file.write(str(coord))
+            path_file.write(str(coord)[1:len(str(coord))-2] + "\n")
         path_file.close()
 
 
