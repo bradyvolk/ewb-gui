@@ -3,9 +3,9 @@
 
 
 ### High Priority
-- Make sure path gets printed to path.txt on press of Run button
 - Testing Pixel_to_GPS 
 - Don't allow users to draw outside of image
+- Losing GPS point when user draws
 
 
 ### Medium Priority
