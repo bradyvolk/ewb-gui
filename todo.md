@@ -4,8 +4,6 @@
 
 ### High Priority
 - Testing Pixel_to_GPS 
-- Don't allow users to draw outside of image
-- Losing GPS point when user draws
 
 
 ### Medium Priority
