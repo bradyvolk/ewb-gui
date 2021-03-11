@@ -17,3 +17,5 @@
 - Indicate to user that they're in draw mode
 - Prevent red dots from appearing when right clicking on file loader pop up
 - Better documentation and instructions page
+- "insert image" disappears if user taps on screen
+- "insert image" remains after inserting image 
