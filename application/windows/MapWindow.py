@@ -157,6 +157,9 @@ class DrawableMapView(Scatter):
     draw_mode = False
     image_uploaded = False
     pixel_to_GPS_map = None
+    source_img = None
+    source_H = 0
+    source_W = 0
 
     # (approximately 1.1 meters)
     distance_between_path_points_in_meters = 0.1
@@ -178,34 +181,38 @@ class DrawableMapView(Scatter):
         if self.draw_mode and self.image_uploaded:
             x = touch.x
             y = touch.y
-            (abs_x, abs_y) = self.to_local(x, y)
-            with self.canvas:
-                Color(0, 0, 0, 1, mode='rgba')  # black
-                # Three cases:
-                # Case 1: no touches yet, so mark where first touch is
-                if not self.first_position:
-                    self.first_position = (abs_x, abs_y)
-                else:
-                    # Case 2: one touch so far, with this next touch make a line
-                    # segment from first_position touch and current touch
-                    if not self.lines:
-                        start_x = self.first_position[0]
-                        start_y = self.first_position[1]
-                        end_x = abs_x
-                        end_y = abs_y
-                        self.lines.append(
-                            Line(points=[start_x, start_y, end_x, end_y], width=5))
-                    # Case 3: there are already line segments, so make a new line segment
-                    # from our last made line segment's last endpoints and our current touch
+            
+            
+
+            if  0<= x and x < self.source_W and 0<= y and y< self.source_H:
+                (abs_x, abs_y) = self.to_local(x, y)
+                with self.canvas:
+                    Color(0, 0, 0, 1, mode='rgba')  # black
+                    # Three cases:
+                    # Case 1: no touches yet, so mark where first touch is
+                    if not self.first_position:
+                        self.first_position = (abs_x, abs_y)
                     else:
-                        last_line = self.lines[len(self.lines)-1]
-                        start_x = last_line.points[len(last_line.points)-2]
-                        start_y = last_line.points[len(last_line.points)-1]
-                        end_x = abs_x
-                        end_y = abs_y
-                        self.lines.append(
-                            Line(points=[start_x, start_y, end_x, end_y], width=5))
-        super().on_touch_down(touch)
+                        # Case 2: one touch so far, with this next touch make a line
+                        # segment from first_position touch and current touch
+                        if not self.lines:
+                            start_x = self.first_position[0]
+                            start_y = self.first_position[1]
+                            end_x = abs_x
+                            end_y = abs_y
+                            self.lines.append(
+                                Line(points=[start_x, start_y, end_x, end_y], width=5))
+                        # Case 3: there are already line segments, so make a new line segment
+                        # from our last made line segment's last endpoints and our current touch
+                        else:
+                            last_line = self.lines[len(self.lines)-1]
+                            start_x = last_line.points[len(last_line.points)-2]
+                            start_y = last_line.points[len(last_line.points)-1]
+                            end_x = abs_x
+                            end_y = abs_y
+                            self.lines.append(
+                                Line(points=[start_x, start_y, end_x, end_y], width=5))
+            super().on_touch_down(touch)
 
     def toggle_draw_mode(self):
         """
@@ -264,6 +271,7 @@ class DrawableMapView(Scatter):
         with self.canvas:
             Image(source=map_source, size=self.size,
                   pos=self.to_local(0, 0))
+
 
         # Creating our pixel to GPS map
         self.pixel_to_GPS_map = pixel_to_GPS(
