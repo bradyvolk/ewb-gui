@@ -4,7 +4,9 @@
 
 ### High Priority
 - Testing Pixel_to_GPS 
-
+- save image of path
+- integrate drone image corner calcuation
+- use k clustering on IR image to find regions of similar color
 
 ### Medium Priority
 - Image filetype validation
