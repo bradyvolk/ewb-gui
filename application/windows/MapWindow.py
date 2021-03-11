@@ -162,7 +162,7 @@ class DrawableMapView(Scatter):
     source_W = 0
 
     # (approximately 1.1 meters)
-    distance_between_path_points_in_meters = 0.1
+    distance_between_path_points_in_meters = 0.01
 
     def __init__(self, **kwargs):
         self.do_rotation = False
@@ -181,11 +181,11 @@ class DrawableMapView(Scatter):
         if self.draw_mode and self.image_uploaded:
             x = touch.x
             y = touch.y
-            
-            
 
-            if  0<= x and x < self.source_W and 0<= y and y< self.source_H:
-                (abs_x, abs_y) = self.to_local(x, y)
+            (abs_x, abs_y) = self.to_local(x, y)
+
+            if 0 <= abs_x and abs_x < self.source_W and 0 <= abs_y and abs_y < self.source_H:
+
                 with self.canvas:
                     Color(0, 0, 0, 1, mode='rgba')  # black
                     # Three cases:
@@ -212,7 +212,7 @@ class DrawableMapView(Scatter):
                             end_y = abs_y
                             self.lines.append(
                                 Line(points=[start_x, start_y, end_x, end_y], width=5))
-            super().on_touch_down(touch)
+        super().on_touch_down(touch)
 
     def toggle_draw_mode(self):
         """
@@ -272,10 +272,9 @@ class DrawableMapView(Scatter):
             Image(source=map_source, size=self.size,
                   pos=self.to_local(0, 0))
 
-
         # Creating our pixel to GPS map
         self.pixel_to_GPS_map = pixel_to_GPS(
-            self.source_img, self.source_H, self.source_W, coords[0], coords[1], coords[2])  # TODO
+            self.source_img, self.source_W, self.source_H, coords[0], coords[1], coords[2])  # TODO
 
     def compute_path(self):
         """
@@ -295,14 +294,8 @@ class DrawableMapView(Scatter):
         GPS_line_endpoints = []
 
         for ((start_x, start_y), (end_x, end_y)) in line_endpoints:
-            print((self.pixel_to_GPS_map[int(start_x)][int(
-                start_y)], self.pixel_to_GPS_map[int(end_x)][int(end_y)]))
             GPS_line_endpoints.append(
                 (self.pixel_to_GPS_map[int(start_x)][int(start_y)], self.pixel_to_GPS_map[int(end_x)][int(end_y)]))
-
-        print("")
-        print("GPS_line_endpoitns: ", GPS_line_endpoints)
-        print("")
 
         # Filling in points between endpoints for path
         # TODO (unpack tuple differently)
@@ -322,30 +315,16 @@ class DrawableMapView(Scatter):
             current_x = start_lon
             current_y = start_lat
 
-            print("Step_x", step_x)
-            print("Step_y", step_y)
-            print("current_x", current_x)
-            print("current_y", current_y)
-            print("end_lat", end_lat)
-            print("end_lon", end_lon)
-            print(abs(end_lat - current_y))
-
             step_condition = (abs(end_lat - current_y) >
                               abs(step_y)) or (abs(end_lon - current_x) > abs(step_x))
 
-            print("Step condition: ", step_condition)
-
             while step_condition:
-                # print("Step condition: ", step_condition)
-                # print("Step_x", step_x)
-                # print("Step_y", step_y)
                 path_in_gps_coordinates.append((current_x, current_y))
                 current_x += step_x
                 current_y += step_y
                 step_condition = (abs(end_lat - current_y) >
                                   abs(step_y)) or (abs(end_lon - current_x) > abs(step_x))
 
-        print(path_in_gps_coordinates)
         return path_in_gps_coordinates
 
     def run(self):
