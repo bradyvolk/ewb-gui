@@ -1,12 +1,14 @@
 """
-Contains template rules for MapWindow in kv language
+Design of DroneWindow screen in Kv langauge
 """
+
 
 from kivy.lang import Builder
 
 Builder.load_string("""
-<MapWindow>:
-    name: "map_window"
+<DroneWindow>:
+    name: "drone_window"
+
     AnchorLayout:
         id: map_window_AnchorLayout
         anchor_y: "top"
@@ -18,12 +20,12 @@ Builder.load_string("""
 
         
 
-        # Main Box that contains Map
+        # Main Box that contains the Drone Image
         FloatLayout:
             pos: (100, 100)
-            DrawableMapView:
+            Button:
                 # pos_hint: {'top': 1, 'bottom': 1}
-                id: map
+                id: test
                 canvas:
                     Rectangle:
                         source: 'resources/images/tanzania_drone_pic2.jpg'
@@ -33,12 +35,7 @@ Builder.load_string("""
                 text: "Please add your own image"
                 font_size: 20
                 bold: True
-                        # Image:
-                        #     id: draw_image
-                        #     source: "resources/images/marker.png"
-                        #     size_hint: (0.03, 0.03)
-                        #     allow_stretch: True
-                        #     opacity: 0
+                        
 
         # Back Button and Title
         FloatLayout:
@@ -59,7 +56,7 @@ Builder.load_string("""
             Label:
                 pos_hint: {"center_x": 0.5, "center_y":0.5}
                 size_hint: (0.8, 0.8)
-                text: "Route Planning"
+                text: "Drone Image Processing"
                 font_size: 30
                 font_name: "resources/fonts/Orbitron-Bold.ttf"
                 bold: True
@@ -80,58 +77,21 @@ Builder.load_string("""
                         size: self.size
                         source: "resources/images/dark-grey.jpg"
                 GridLayout:
-                    cols: 6
-                    size_hint_y: 0.3
+                    cols: 2
+                    size_hint_y: 0.5
                     size_hint_x: 1
-                    AnchorLayout:
-                        Button:
-                            text: "Insert Image"
-                            size_hint: (1, 0.6)
-                            on_release: 
-                                root.show_load()
-                    AnchorLayout:
-                        Button:
-                            text: "Undo"
-                            size_hint: (1, 0.6)
-                            padding_x: 10
-                            on_release: 
-                                root.ids["map"].undo()
-                    AnchorLayout:
-                        Button:
-                            text: "Clear"
-                            size_hint: (1, 0.6)
-                            padding_x: 10
-                            on_release: 
-                                root.ids["map"].clear()
-                    AnchorLayout:
-                        Button:
-                            text: "Recenter"
-                            size_hint: (1, 0.6)
-                            padding_x: 10
-                            on_release:
-                                root.ids["map"].recenter()
-                    AnchorLayout:
-                        Button:
-                            text: "Lasso"
-                            size_hint: (1, 0.6)
-                            padding_x: 10
-                    AnchorLayout:
-                        Button:
-                            id: draw_mode_button
-                            text: "Draw Path"
-                            size_hint: (1, 0.6)
-                            padding_x: 10
-                            on_release: 
-                                root.ids["map"].toggle_draw_mode()
-                AnchorLayout:
-                    anchor_x: "right"
-                    size_hint_x: 0.3
-                    padding: 10
+                    Button:
+                        text: "Insert Image"
+                        size_hint: (1, 0.6)
+                        on_release: 
+                            root.show_load()
                     Button:
                         text: "Run"
                         size_hint: (1, 1)
                         on_release:
-                            root.ids["map"].run()
+                            pass
+            
+                    
 
 <LoadDialog>:
     BoxLayout:
@@ -254,5 +214,4 @@ Builder.load_string("""
             text: "Submit"
             on_release:
                 root.submit_coordinates()
-
 """)

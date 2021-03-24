@@ -19,7 +19,7 @@ Builder.load_string("""
         columns: 1
         padding: 100
         spacing: 100
-        orientation: "vertical"
+        orientation: "tb-lr"
         canvas.before:
             Rectangle:
                 pos: self.pos
@@ -37,10 +37,15 @@ Builder.load_string("""
         # Navigation Buttons
         GridLayout:
             col: 1
-            rows: 4
+            rows: 5
             spacing: 10
             Button:
                 text: "Start"
+                on_release: 
+                    app.root.current = "drone_window"
+                    root.manager.transition.direction = "left"
+            Button:
+                text: "Draw Path"
                 on_release: 
                     app.root.current = "map_window"
                     root.manager.transition.direction = "left"

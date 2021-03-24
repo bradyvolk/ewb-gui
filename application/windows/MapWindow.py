@@ -281,6 +281,8 @@ class DrawableMapView(Scatter):
         Using the pixel_to_GPS_map and endpoints of the lines, computes a path
         and returns it as a nested array.
         """
+
+        print("hello")
         path_in_gps_coordinates = []
 
         line_endpoints = []  # array of tuples of path end_points as pixel values relative
@@ -324,7 +326,7 @@ class DrawableMapView(Scatter):
                 current_y += step_y
                 step_condition = (abs(end_lat - current_y) >
                                   abs(step_y)) or (abs(end_lon - current_x) > abs(step_x))
-
+        print(path_in_gps_coordinates)
         return path_in_gps_coordinates
 
     def run(self):
