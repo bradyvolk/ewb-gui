@@ -135,5 +135,5 @@ class CoordinateDialog(FloatLayout):
     cancel = ObjectProperty(None)
 
 
-Factory.register('LoadDialog', cls=LoadDialog)
+Factory.register('LoadDialogDrone', cls=LoadDialog)
 Factory.register('CoordinateDialog', cls=CoordinateDialog)

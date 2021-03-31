@@ -93,7 +93,7 @@ Builder.load_string("""
             
                     
 
-<LoadDialog>:
+<LoadDialogDrone>:
     BoxLayout:
         size: root.size
         pos: root.pos
@@ -118,11 +118,7 @@ Builder.load_string("""
         size: root.size
         pos: root.pos
         rows: 10
-<<<<<<< HEAD
         orientation: "tb-lr"
-=======
-        orientation: "vertical"
->>>>>>> 0d85a60efbcefacb8bc8dd6bd4be5e5e11376a8e
         Label:
             size_hint_y: 0.3
             font_size: 14

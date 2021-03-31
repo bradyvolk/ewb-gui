@@ -55,6 +55,11 @@ Builder.load_string("""
                     app.root.current = "instructions_window"
                     root.manager.transition.direction = "left"
             Button:
+                text: "Train"
+                on_release: 
+                    app.root.current = "training_window"
+                    root.manager.transition.direction = "left"
+            Button:
                 text: "Documentation"
                 on_release:
                     root.open_documentation()
