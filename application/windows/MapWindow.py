@@ -33,6 +33,7 @@ from kivy.graphics import Color
 from kivy.graphics import Line
 import widgets.MapWindowWidget
 from Pixel_to_GPS import pixel_to_GPS, read_image
+from DroneCornerCalculator import calculate_corners
 from math import sqrt
 
 
@@ -68,7 +69,7 @@ class MapWindow(Screen):
         self.dismiss_popup()
         self.coord_dialog = CoordinateDialog(
             submit_coordinates=self.submit_coordinates, cancel=self.dismiss_popup)
-        self._popup = Popup(title="Input Coordinates", content=self.coord_dialog,
+        self._popup = Popup(title="Input Metadata", content=self.coord_dialog,
                             size_hint=(0.9, 0.9))
         self._popup.open()
 
@@ -77,60 +78,77 @@ class MapWindow(Screen):
         Checks if user inputted at least 3 valid coordinates and send them to
         our DrawableMapView if so.
         """
-        (bl_coord_lat, bl_coord_lon, tl_coord_lat, tl_coord_lon, br_coord_lat,
-         br_coord_lon, tr_coord_lat, tr_coord_lon) = self.validate_coordinates()
 
-        coords = [(bl_coord_lat, bl_coord_lon), (tl_coord_lat, tl_coord_lon),
-                  (br_coord_lat, br_coord_lon), (tr_coord_lat, tr_coord_lon)]
+        gps_coordinate = (float(self.coord_dialog.ids["drone_coord_lat"].text), float(
+            self.coord_dialog.ids["drone_coord_lon"].text))
+        orientation = float(self.coord_dialog.ids["drone_heading"].text)
+        rel_height = float(self.coord_dialog.ids["drone_height"].text)
+        camera_angle = (float(self.coord_dialog.ids["drone_camera_angle_x"].text), float(
+            self.coord_dialog.ids["drone_camera_angle_y"].text))
 
-        invalidpairs = 0
+        coords = calculate_corners(
+            gps_coordinate, orientation, rel_height, camera_angle)
+        print(coords)
+        self.dismiss_popup()
+        self.ids["map"].load_map_source(
+            self.map_source, coords)
 
-        for (lat, lon) in coords:
-            if lat == None or lon == None:
-                invalidpairs += 1
+        # (bl_coord_lat, bl_coord_lon, tl_coord_lat, tl_coord_lon, br_coord_lat,
+        #  br_coord_lon, tr_coord_lat, tr_coord_lon) = self.validate_coordinates()
 
-        if invalidpairs > 1:
-            pass
-        else:
-            self.dismiss_popup()
-            self.ids["map"].load_map_source(
-                self.map_source, coords)
+        # coords = [(bl_coord_lat, bl_coord_lon), (tl_coord_lat, tl_coord_lon),
+        #           (br_coord_lat, br_coord_lon), (tr_coord_lat, tr_coord_lon)]
+
+        # invalidpairs = 0
+
+        # for (lat, lon) in coords:
+        #     if lat == None or lon == None:
+        #         invalidpairs += 1
+
+        # if invalidpairs > 1:
+        #     pass
+        # else:
+        #     self.dismiss_popup()
+        #     self.ids["map"].load_map_source(
+        #         self.map_source, coords)
 
     def validate_coordinates(self):
         """
         Validates user-inputted coordinates
         """
-        coord_ids = ["bl_coord_lat", "bl_coord_lon", "tl_coord_lat", "tl_coord_lon",
-                     "br_coord_lat", "br_coord_lon", "tr_coord_lat", "tr_coord_lon"]
-        (bl_coord_lat, bl_coord_lon, tl_coord_lat, tl_coord_lon, br_coord_lat,
-         br_coord_lon, tr_coord_lat, tr_coord_lon) = (None, None, None, None, None, None, None, None)
-        coords = [bl_coord_lat, bl_coord_lon, tl_coord_lat, tl_coord_lon, br_coord_lat,
-                  br_coord_lon, tr_coord_lat, tr_coord_lon]
+        pass
+        # coord_ids = ["bl_coord_lat", "bl_coord_lon", "tl_coord_lat", "tl_coord_lon",
+        #              "br_coord_lat", "br_coord_lon", "tr_coord_lat", "tr_coord_lon"]
+        # (bl_coord_lat, bl_coord_lon, tl_coord_lat, tl_coord_lon, br_coord_lat,
+        #  br_coord_lon, tr_coord_lat, tr_coord_lon) = (None, None, None, None, None, None, None, None)
+        # coords = [bl_coord_lat, bl_coord_lon, tl_coord_lat, tl_coord_lon, br_coord_lat,
+        #           br_coord_lon, tr_coord_lat, tr_coord_lon]
 
-        for i in range(len(coord_ids)):
-            coords[i] = self.validate_coordinate(coord_ids[i])
+        # for i in range(len(coord_ids)):
+        #     coords[i] = self.validate_coordinate(coord_ids[i])
 
-        return coords
+        # return coords
 
     def validate_coordinate(self, coord_id):
-        """
-        Validates a given user-inputted coordinate. If the input is
-        non-numeric, then the label is given an (Invalid) marker, and
-        the text changes to red to indicate to the user the invalid input.
-        """
-        label_id = coord_id + "_label"
-        label = self.coord_dialog.ids[label_id]
-        try:
-            coord = float(self.coord_dialog.ids[coord_id].text)
-            if "(Invalid)" in label.text:
-                label.text = label.text[:label.text.find(" (Invalid)")]
-            label.color = (1, 1, 1, 1)
-        except:
-            coord = None
-            if "(Invalid)" not in label.text:
-                label.text = label.text + " (Invalid)"
-            label.color = (1, 0, 0, 0.8)
-        return coord
+        pass
+        # """
+        # Validates a given user-inputted coordinate. If the input is
+        # non-numeric, then the label is given an (Invalid) marker, and
+        # the text changes to red to indicate to the user the invalid input.
+        # """
+        # label_id = coord_id + "_label"
+        # label = self.coord_dialog.ids[label_id]
+        # try:
+        #     coord = float(self.coord_dialog.ids[coord_id].text)
+        #     if "(Invalid)" in label.text:
+        #         label.text = label.text[:label.text.find(" (Invalid)")]
+        #     label.color = (1, 1, 1, 1)
+        # except:
+        #     coord = None
+        #     if "(Invalid)" not in label.text:
+        #         label.text = label.text + " (Invalid)"
+        #     label.color = (1, 0, 0, 0.8)
+        # return coord
 
 
 class LoadDialog(FloatLayout):
@@ -162,7 +180,7 @@ class DrawableMapView(Scatter):
     source_W = 0
 
     # (approximately 1.1 meters)
-    distance_between_path_points_in_meters = 0.01
+    distance_between_path_points_in_meters = 0.0001
 
     def __init__(self, **kwargs):
         self.do_rotation = False
@@ -282,7 +300,7 @@ class DrawableMapView(Scatter):
         and returns it as a nested array.
         """
 
-        print("hello")
+        # print("hello")
         path_in_gps_coordinates = []
 
         line_endpoints = []  # array of tuples of path end_points as pixel values relative

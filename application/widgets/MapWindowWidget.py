@@ -163,26 +163,26 @@ Builder.load_string("""
             size_hint_y: 0.3
             font_size: 14
             halign: 'center'
-            text: "\\n\\nInput at least three GPS Coordinates into the fields. \\nFor example: Top Left Coordinate should take in the GPS value of the top left coordinate of the image.\\n"
+            text: "Please enter information about the drone to calculate four GPS corners"
         BoxLayout:
             orientation: "horizontal"
 
             BoxLayout:
                 orientation: "vertical"
                 Label:
-                    id: tl_coord_lat_label
-                    text: "Top Left Coordinate Latitude"
+                    id: drone_coord_lat_label
+                    text: "Drone Coordinate Latitude"
                 
                 TextInput:
-                    id: tl_coord_lat
+                    id: drone_coord_lat
               
             BoxLayout:
                 orientation: "vertical"
                 Label:
-                    id: tl_coord_lon_label
-                    text: "Top Left Coordinate Longitude"
+                    id: drone_coord_lon_label
+                    text: "Drone Coordinate Longitude"
                 TextInput:
-                    id: tl_coord_lon
+                    id: drone_coord_lon
 
 
         BoxLayout:
@@ -191,19 +191,13 @@ Builder.load_string("""
             BoxLayout:
                 orientation: "vertical"
                 Label:
-                    id: tr_coord_lat_label
-                    text: "Top Right Coordinate Latitude"
+                    id: drone_heading_label
+                    text: "Heading"
                 
                 TextInput:
-                    id: tr_coord_lat
+                    id: drone_heading
               
-            BoxLayout:
-                orientation: "vertical"
-                Label:
-                    id: tr_coord_lon_label
-                    text: "Top Right Coordinate Longitude"
-                TextInput:
-                    id: tr_coord_lon
+            
 
         
         BoxLayout:
@@ -212,19 +206,13 @@ Builder.load_string("""
             BoxLayout:
                 orientation: "vertical"
                 Label:
-                    id: bl_coord_lat_label
-                    text: "Bottom Left Coordinate Latitude"
+                    id: drone_height_label
+                    text: "Height"
                 
                 TextInput:
-                    id: bl_coord_lat
+                    id: drone_height
               
-            BoxLayout:
-                orientation: "vertical"
-                Label:
-                    id: bl_coord_lon_label
-                    text: "Bottom Left Coordinate Longitude"
-                TextInput:
-                    id: bl_coord_lon
+            
 
 
         BoxLayout:
@@ -233,19 +221,19 @@ Builder.load_string("""
             BoxLayout:
                 orientation: "vertical"
                 Label:
-                    id: br_coord_lat_label
-                    text: "Bottom Right Coordinate Latitude"
+                    id: drone_camera_angle_x_label
+                    text: "Camera Angle X"
                 
                 TextInput:
-                    id: br_coord_lat
+                    id: drone_camera_angle_x
               
             BoxLayout:
                 orientation: "vertical"
                 Label:
-                    id: br_coord_lon_label
-                    text: "Bottom Right Coordinate Longitude"
+                    id: drone_camera_angle_y_label
+                    text: "Camera Angle Y"
                 TextInput:
-                    id: br_coord_lon
+                    id: drone_camera_angle_y
 
                 
         Button:

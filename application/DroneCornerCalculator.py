@@ -2,7 +2,7 @@ import numpy as np
 import math
 
 
-def calcuate_corners(gps_coordinate, orientation, rel_height, camera_angle):
+def calculate_corners(gps_coordinate, orientation, rel_height, camera_angle):
     """
     gps_coordinate - tuple - tuple of gps coordinate of drone
     orientation - float - orientation clockwise from north in degrees
@@ -59,14 +59,10 @@ def calcuate_corners(gps_coordinate, orientation, rel_height, camera_angle):
         br = (lat - 2 * half_y_of_image, lon + 2 * half_x_of_image)
         tr = (lat, lon + 2 * half_x_of_image)
 
-    print(tl, bl, br, tr)
-
     tl = (gps_coordinate[0] - tl[0], gps_coordinate[1] + tl[1])
     tr = (gps_coordinate[0] - tr[0], gps_coordinate[1] - tr[1])
     bl = (gps_coordinate[0] + bl[0], gps_coordinate[1] + bl[1])
     br = (gps_coordinate[0] + br[0], gps_coordinate[1] - br[1])
+    print(bl, tl, br, tr)
 
-    return (tl, tr, bl, br)
-
-
-print(calcuate_corners((30, 30), 10, 1000, (45, 45)))
+    return [bl, tl, br, tr]
