@@ -23,7 +23,6 @@ def calculate_corners(gps_coordinate, orientation, rel_height, camera_angle):
 
     distance_to_corner = math.sqrt(
         half_x_of_image**2 + half_y_of_image**2)  # = rel_height * sqrt(2)
-    print(distance_to_corner)
 
     # determine case for arctan
     temp = orientation % 180            # = 90
@@ -58,14 +57,14 @@ def calculate_corners(gps_coordinate, orientation, rel_height, camera_angle):
         tl = ((-1) * lon, (-1) * lat)
     elif (orientation < 270):
         bl = (lat, lon)
-        tl = (lat + 2 * half_y_of_image, lon)
-        tr = (lat + 2 * half_y_of_image, lon + 2 * half_x_of_image)
-        br = (lat, lon + 2 * half_x_of_image)
+        tl = ((-1) * lon, lat)
+        tr = ((-1) * lat, (-1) * lon)
+        br = (lon, (-1) * lat)
     else:
         tl = (lat, lon)
-        bl = (lat - 2 * half_y_of_image, lon)
-        br = (lat - 2 * half_y_of_image, lon + 2 * half_x_of_image)
-        tr = (lat, lon + 2 * half_x_of_image)
+        tr = ((-1) * lon, lat)
+        br = ((-1) * lat, (-1) * lon)
+        bl = (lon, (-1) * lat)
 
     tl = (gps_coordinate[0] + tl[0], gps_coordinate[1] + tl[1])
     tr = (gps_coordinate[0] + tr[0], gps_coordinate[1] + tr[1])
