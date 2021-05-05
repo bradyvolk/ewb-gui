@@ -1,10 +1,16 @@
 # TODO
 ## Last Updated - 3/31/2020
 
+### This summer 
+- Finish up corner calculator 
+- save image of path
+
+### Next Semester
+- Join Hardware: work on controls for rover and automation (maybe)
 
 ### High Priority
 - Testing Pixel_to_GPS 
-- save image of path
+- Testing four corners algorithm
 - integrate drone image corner calcuation
 - use k clustering on IR image to find regions of similar color
 

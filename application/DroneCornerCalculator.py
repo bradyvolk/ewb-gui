@@ -45,17 +45,37 @@ def calculate_corners(gps_coordinate, orientation, rel_height, camera_angle):
 
     print(lat, lon)
 
-    if (orientation < 90):
+    if (orientation < 45):
         tr = (lat, lon)
         br = ((-1) * lon, lat)
         bl = ((-1) * lat, (-1) * lon)
         tl = (lon, (-1) * lat)
-    elif (orientation < 180):
+    elif (orientation < 90):
         br = (lat, lon)
         tr = (lon, (-1) * lat)
         bl = ((-1) * lat, lon)
         tl = ((-1) * lon, (-1) * lat)
+    elif (orientation < 135):
+        bl = (lat, lon)
+        tl = ((-1) * lon, lat)
+        tr = ((-1) * lat, (-1) * lon)
+        br = (lon, (-1) * lat)
+    elif (orientation < 180):
+        tl = (lat, lon)
+        tr = ((-1) * lon, lat)
+        br = ((-1) * lat, (-1) * lon)
+        bl = (lon, (-1) * lat)
+    elif (orientation < 225):
+        tr = (lat, lon)
+        br = ((-1) * lon, lat)
+        bl = ((-1) * lat, (-1) * lon)
+        tl = (lon, (-1) * lat)
     elif (orientation < 270):
+        br = (lat, lon)
+        tr = (lon, (-1) * lat)
+        bl = ((-1) * lat, lon)
+        tl = ((-1) * lon, (-1) * lat)
+    elif (orientation < 315):
         bl = (lat, lon)
         tl = ((-1) * lon, lat)
         tr = ((-1) * lat, (-1) * lon)
@@ -75,4 +95,5 @@ def calculate_corners(gps_coordinate, orientation, rel_height, camera_angle):
     return [bl, tl, br, tr]
 
 
-calculate_corners((20, 20), 10, 110000, (45, 45))
+calculate_corners((20, 20), 89, 110000, (45, 45))
+calculate_corners((20, 20), 90, 110000, (45, 45))
