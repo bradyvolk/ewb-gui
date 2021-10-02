@@ -40,24 +40,19 @@ Builder.load_string("""
             rows: 5
             spacing: 10
             Button:
-                text: "Start"
+                text: "Train"
                 on_release: 
-                    app.root.current = "drone_window"
+                    app.root.current = "training_window"
                     root.manager.transition.direction = "left"
             Button:
-                text: "Draw Path"
+                text: "Detect"
                 on_release: 
-                    app.root.current = "map_window"
+                    app.root.current = "detect_window"
                     root.manager.transition.direction = "left"
             Button:
                 text: "Instructions"
                 on_release:
                     app.root.current = "instructions_window"
-                    root.manager.transition.direction = "left"
-            Button:
-                text: "Train"
-                on_release: 
-                    app.root.current = "training_window"
                     root.manager.transition.direction = "left"
             Button:
                 text: "Documentation"

@@ -15,7 +15,6 @@ from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
 from windows.HomeWindow import HomeWindow
-from windows.MapWindow import MapWindow
 from windows.TrainingWindow import TrainingWindow
 from windows.InstructionsWindow import InstructionsWindow
 from kivy.clock import Clock
