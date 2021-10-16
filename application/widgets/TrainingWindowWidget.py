@@ -48,11 +48,19 @@ Builder.load_string("""
 
         AnchorLayout:
             anchor_y: "bottom"
-            Button:
-                text: "Insert Image"
-                size_hint: (1, 0.6)
-                on_release: root.show_load()
-                   
+            BoxLayout:
+                orientation: "horizontal"
+                Button:
+                    text: "Upload Dataset"
+                    size_hint: (0.5, 0.1)
+                    on_release: 
+                        print(root.ids);
+                        root.show_load()
+                Button:
+                    text: "Train"
+                    size_hint: (0.5, 0.1)
+                    on_release: root.show_load()
+                    
             
                     
 
