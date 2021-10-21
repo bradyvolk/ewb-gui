@@ -64,15 +64,13 @@ Builder.load_string("""
             
                     
 
-<LoadDialogTraining>:
+<LoadDialog>:
     BoxLayout:
         size: root.size
         pos: root.pos
         orientation: "vertical"
         FileChooserListView:
             id: filechooser
-            path: "../../../"
-            rootpath: "../"
         BoxLayout:
             size_hint_y: None
             height: 30

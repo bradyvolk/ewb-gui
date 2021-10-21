@@ -25,6 +25,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import StringProperty
 from kivy.uix.popup import Popup
 from kivy.factory import Factory
+import os
 
 
 class TrainingWindow(Screen):
@@ -46,7 +47,8 @@ class TrainingWindow(Screen):
         """
         Shows the pop up for the kivy file explorer
         """
-        content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
+        content = LoadDialog(
+            load=self.load, cancel=self.dismiss_popup)
         self._popup = Popup(title="Load file", content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()
