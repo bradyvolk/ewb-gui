@@ -5,7 +5,7 @@ Class definition for HomeWindow
 from kivy.uix.screenmanager import Screen
 import os
 import webbrowser
-import widgets.TrainingWindowWidget
+import widgets.DetectWindowWidget
 from os.path import dirname, join, normpath
 from itertools import takewhile
 from kivy.core.window import Window
@@ -28,7 +28,7 @@ from kivy.factory import Factory
 import os
 
 
-class TrainingWindow(Screen):
+class DetectWindow(Screen):
     """
     Window for drone image processing
     """
@@ -59,9 +59,9 @@ class TrainingWindow(Screen):
         be used for a map.
         """
         if filename == []:  # this means a file was NOT selected
-            self.path_to_training_set = path
+            self.path_to_image_set = path
             print(path)
-            print(self.path_to_training_set)
+            print(self.path_to_image_set)
             self.dismiss_popup()
 
 
@@ -70,4 +70,4 @@ class LoadDialog(FloatLayout):
     cancel = ObjectProperty(None)
 
 
-Factory.register('LoadDialogTraining', cls=LoadDialog)
+Factory.register('LoadDialogDetect', cls=LoadDialog)

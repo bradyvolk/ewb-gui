@@ -1,13 +1,13 @@
 """
-Design of TrainingWindow screen in Kv langauge
+Design of DetectWindow screen in Kv langauge
 """
 
 
 from kivy.lang import Builder
 
 Builder.load_string("""
-<TrainingWindow>:
-    name: "training_window"
+<DetectWindow>:
+    name: "detect_window"
 
     AnchorLayout:
         id: map_window_AnchorLayout
@@ -17,10 +17,7 @@ Builder.load_string("""
                 pos: self.pos
                 size: self.size
                 source: "resources/images/dark-grey.jpg"
-
-        
                 
-
         # Back Button and Title
         FloatLayout:
             id: title_FloatLayout
@@ -40,7 +37,7 @@ Builder.load_string("""
             Label:
                 pos_hint: {"center_x": 0.5, "center_y":0.5}
                 size_hint: (0.8, 0.8)
-                text: "Training Your Own CNN"
+                text: "Detect NLB with rCNN"
                 font_size: 30
                 font_name: "resources/fonts/Orbitron-Bold.ttf"
                 bold: True
@@ -51,16 +48,16 @@ Builder.load_string("""
             BoxLayout:
                 orientation: "horizontal"
                 Button:
-                    text: "Upload Dataset"
+                    text: "Upload Images"
                     size_hint: (0.5, 0.1)
                     on_release: 
                         print(root.ids);
                         root.show_load()
                 Button:
-                    text: "Train"
+                    text: "Detect"
                     size_hint: (0.5, 0.1)
-                    on_release: root.show_load()                
-
+                    on_release: root.show_load()
+                    
 <LoadDialog>:
     BoxLayout:
         size: root.size
@@ -78,4 +75,5 @@ Builder.load_string("""
             Button:
                 text: "Load"
                 on_release: root.load(filechooser.path, filechooser.selection)
+
 """)

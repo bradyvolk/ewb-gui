@@ -17,6 +17,7 @@ from kivy.lang import Builder
 from windows.HomeWindow import HomeWindow
 from windows.TrainingWindow import TrainingWindow
 from windows.InstructionsWindow import InstructionsWindow
+from windows.DetectWindow import DetectWindow
 from kivy.clock import Clock
 
 import kivy
