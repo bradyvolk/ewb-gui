@@ -1,4 +1,4 @@
 application/cache
 settings.json
-path.txt
-application/kivy_venv/
+../path.txt
+
