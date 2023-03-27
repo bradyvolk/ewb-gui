@@ -3,6 +3,7 @@
 Engineer's Without Borders Digital Agriculture Subteam GUI design experimentation for rover and drone control application
 
 ## Overview
+
 We plan to build our app with Python using Kivy to develop our GUI and interface with the Google Maps API (Acutally might not use Google Maps API, we'll see?)
 
 ## Getting Started with Kivy
@@ -15,6 +16,8 @@ After [installing Kivy](https://kivy.org/doc/stable/installation/installation-wi
 
 ### To activate virtual environment:
 
+- Navigate to application folder and run following command
+
 ```shell
 kivy_venv\Scripts\activate
 ```
@@ -25,10 +28,19 @@ kivy_venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
+### Running Application
+
+1. activate virtual environment shown above
+2. Run following command
+
+```shell
+python main.py
+```
+
 ### Working with Google Maps API
+
 https://github.com/googlemaps/google-maps-services-python
 
 ### Kivy Map Widget:
+
 https://github.com/kivy-garden/garden.mapview
-
-
