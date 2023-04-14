@@ -40,14 +40,19 @@ Builder.load_string("""
             rows: 5
             spacing: 10
             Button:
-                text: "Start"
+                text: "Phase 1: NDVI Index"
                 on_release: 
-                    app.root.current = "drone_window"
+                    app.root.current = "ndvi_index_window"
                     root.manager.transition.direction = "left"
             Button:
-                text: "Draw Path"
+                text: "Phase 2: Route Planning"
                 on_release: 
-                    app.root.current = "map_window"
+                    app.root.current = "route_planning_window"
+                    root.manager.transition.direction = "left"
+            Button:
+                text: "Phase 3: Identify NLB"
+                on_release:
+                    app.root.current = "nlb_identification_window"
                     root.manager.transition.direction = "left"
             Button:
                 text: "Instructions"
@@ -55,16 +60,8 @@ Builder.load_string("""
                     app.root.current = "instructions_window"
                     root.manager.transition.direction = "left"
             Button:
-                text: "Train"
-                on_release: 
-                    app.root.current = "training_window"
-                    root.manager.transition.direction = "left"
-            Button:
-                text: "Documentation"
-                on_release:
-                    root.open_documentation()
-            Button:
                 text: "Project Information"
                 on_release:
                     root.open_projectinfo("https://ewb.engineering.cornell.edu/subteams.html")
+            
 """)

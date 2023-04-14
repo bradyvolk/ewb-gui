@@ -5,8 +5,8 @@ Contains template rules for MapWindow in kv language
 from kivy.lang import Builder
 
 Builder.load_string("""
-<MapWindow>:
-    name: "map_window"
+<RoutePlanningWindow>:
+    name: "route_planning_window"
     AnchorLayout:
         id: map_window_AnchorLayout
         anchor_y: "top"

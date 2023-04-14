@@ -31,13 +31,13 @@ from kivy.factory import Factory
 from kivy.uix.scatter import Scatter
 from kivy.graphics import Color
 from kivy.graphics import Line
-import widgets.MapWindowWidget
+import widgets.RoutePlanningWindowWidget
 from Pixel_to_GPS import pixel_to_GPS, read_image
 from DroneCornerCalculator import calculate_corners
 from math import sqrt
 
 
-class MapWindow(Screen):
+class RoutePlanningWindow(Screen):
     """
     Mapping screen and code for loading maps
     """

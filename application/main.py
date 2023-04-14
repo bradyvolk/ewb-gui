@@ -5,8 +5,10 @@ Imports the other windows where most of the action is for our code.
 
 Three Windows as of now:
 (1) HomeWindow - home screen of the application
-(2) MapWindow - central function of application
-(3) InstructionsWindow - windows for instructions on using application
+(2) NDVIIndexWindow - NDVI Index Phase of application
+(3) MapWindow - Route Planning Phase of application
+(4) NLBIdentificationWindow - Identification of NLB Phase of application
+(5) InstructionsWindow - windows for instructions on using application
 
 """
 
@@ -15,9 +17,11 @@ from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
 from windows.HomeWindow import HomeWindow
-from windows.MapWindow import MapWindow
+from windows.RoutePlanningWindow import RoutePlanningWindow
 from windows.TrainingWindow import TrainingWindow
 from windows.InstructionsWindow import InstructionsWindow
+from windows.NDVIIndexWindow import NDVIIndexWindow
+from windows.NLBIdentificationWindow import NLBIdentificationWindow
 from kivy.clock import Clock
 
 import kivy
